@@ -5,6 +5,11 @@ import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
 
+local image = playdate.graphics.image.new("images/thing.png")
+local sprite = playdate.graphics.sprite.new(image)
+sprite:moveTo(0 + 31, 240 - 31)
+sprite:add()
+
 local image = playdate.graphics.image.new("images/ball.png")
 local sprite = playdate.graphics.sprite.new(image)
 sprite:moveTo(0, 240)
