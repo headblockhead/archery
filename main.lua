@@ -5,26 +5,44 @@ import "CoreLibs/timer"
 
 local gfx<const> = playdate.graphics
 
-local arcimage = gfx.image.new(60, 60)
-gfx.pushContext(arcimage)
+local arc_image = gfx.image.new(60, 60)
+gfx.pushContext(arc_image)
 gfx.drawArc(0, 60, 60, 0, 90)
 gfx.popContext()
-local arc = gfx.sprite.new(arcimage)
-arc:moveTo(30, 210)
-arc:add()
+local sprite_arc = gfx.sprite.new(arc_image)
+sprite_arc:moveTo(30, 210)
+sprite_arc:add()
 
-local image = gfx.image.new("images/ball.png")
-local sprite = gfx.sprite.new(image)
-sprite:moveTo(0, 240)
-sprite:add()
+local image_ball = gfx.image.new("images/ball.png")
+local sprite_ball = gfx.sprite.new(image_ball)
+sprite_ball:moveTo(0, 240)
+sprite_ball:setCollideRect(0, 0, sprite_ball:getSize())
+sprite_ball:add()
 
-local aimimage = gfx.image.new(400, 240)
-gfx.pushContext(aimimage)
+local image_enemy = gfx.image.new("images/enemy0.png")
+local sprite_enemy = gfx.sprite.new(image_enemy)
+sprite_enemy:moveTo(50, 208)
+sprite_enemy:setCollideRect(0, 0, sprite_ball:getSize())
+sprite_enemy:add()
+
+local aim_image = gfx.image.new(400, 240)
+gfx.pushContext(aim_image)
 gfx.drawLine(0, 0, 400, 240)
 gfx.popContext()
-local aim = gfx.sprite.new(aimimage)
-aim:moveTo(200, 120)
-aim:add()
+local aim_sprite = gfx.sprite.new(aim_image)
+aim_sprite:moveTo(200, 120)
+aim_sprite:add()
+
+local background_image = gfx.image.new("images/background.png")
+assert(background_image)
+
+gfx.sprite.setBackgroundDrawingCallback(
+	function(x, y, width, height)
+		gfx.setClipRect(x, y, width, height) -- let's only draw the part of the screen that's dirty
+		background_image:draw(0, 0)
+		gfx.clearClipRect() -- clear so we don't interfere with drawing that comes after this
+	end
+)
 
 local MAX_VELOCITY = 8.0
 
@@ -36,18 +54,18 @@ function updateaim(angle, velocity)
 		return
 	end
 	local x = 240 * math.tan(math.rad(angle))
-	newlineimage = gfx.image.new(400, 240)
-	gfx.pushContext(newlineimage)
+	new_aim_image = gfx.image.new(400, 240)
+	gfx.pushContext(new_aim_image)
 	-- Draw the thin line for the aim.
 	gfx.drawLine(0, 240, x, 0)
 	-- Draw the thick line for the velocity.
-	local percentVelocity = velocity / MAX_VELOCITY
+	local percent_velocity = velocity / MAX_VELOCITY
 	playdate.graphics.setLineWidth(3)
-	gfx.drawLine(0, 240, x * percentVelocity, 240 - (240 * percentVelocity))
+	gfx.drawLine(0, 240, x * percent_velocity, 240 - (240 * percent_velocity))
 	playdate.graphics.setLineWidth(1)
 	-- Complete.
 	gfx.popContext()
-	aim:setImage(newlineimage)
+	aim_sprite:setImage(new_aim_image)
 	last_aim_angle = angle
 	last_aim_velocity = velocity
 end
@@ -92,13 +110,16 @@ function playdate.update()
 		end
 	end
 	if (state == STATE_FIRING) then
+		for i, overlapsprite in pairs(sprite_ball:overlappingSprites()) do
+			overlapsprite:remove()
+		end
 		frame = frame + 1
-		local gravity = 0.09
+		local gravity = 0.14
 		local x, y = calc_movement(velocity, 90.0 - angle)
 		y = y - gravity * (frame / 2.0)
-		sprite:moveTo(sprite.x + x, sprite.y - y)
-		if (sprite.y > 250) then
-			sprite:moveTo(0, 240)
+		sprite_ball:moveTo(sprite_ball.x + x, sprite_ball.y - y)
+		if (sprite_ball.y > 250) then
+			sprite_ball:moveTo(0, 240)
 			frame = 0
 			velocity = 0.0
 			change_state(STATE_TITLE)
