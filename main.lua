@@ -19,9 +19,26 @@ sprite_ball:moveTo(0, 240)
 sprite_ball:setCollideRect(0, 0, sprite_ball:getSize())
 sprite_ball:add()
 
+local meter_image = gfx.image.new("images/meter.png")
+local sprite_meter = gfx.sprite.new(meter_image)
+sprite_meter:setZIndex(2)
+sprite_meter:moveTo(200, 8)
+sprite_meter:add()
+
+local meter_line_image = gfx.image.new(400, 16)
+gfx.pushContext(meter_line_image)
+playdate.graphics.setLineWidth(13)
+gfx.drawLine(0, 8, 400, 8)
+playdate.graphics.setLineWidth(1)
+gfx.popContext()
+local meter_line_sprite = gfx.sprite.new(meter_line_image)
+meter_line_sprite:setZIndex(3)
+meter_line_sprite:moveTo(200, 8)
+meter_line_sprite:add()
+
 local image_enemy = gfx.image.new("images/enemy0.png")
 local sprite_enemy = gfx.sprite.new(image_enemy)
-sprite_enemy:moveTo(50, 208)
+sprite_enemy:moveTo(280, 208)
 sprite_enemy:setCollideRect(0, 0, sprite_ball:getSize())
 sprite_enemy:add()
 
@@ -48,6 +65,10 @@ local MAX_VELOCITY = 8.0
 
 local last_aim_angle = -1
 local last_aim_velocity = -1
+
+function updatevelocity(velocity)
+
+end
 
 function updateaim(angle, velocity)
 	if (angle == last_aim_angle and velocity == last_aim_velocity) then
@@ -94,7 +115,8 @@ function playdate.update()
 	end
 	if (state == STATE_SET_ANGLE) then
 		angle = playdate.getCrankPosition()
-		angle = angle % 90
+		angle = angle / 4
+		--angle = angle % 90
 		updateaim(angle, velocity)
 		if playdate.buttonJustReleased(playdate.kButtonA) then
 			change_state(STATE_SET_VELOCITY)
@@ -103,6 +125,7 @@ function playdate.update()
 	end
 	if (state == STATE_SET_VELOCITY) then
 		velocity = playdate.getCrankPosition() / 45
+		updatevelocity(velocity)
 		updateaim(angle, velocity)
 		if playdate.buttonJustReleased(playdate.kButtonA) then
 			change_state(STATE_FIRING)
