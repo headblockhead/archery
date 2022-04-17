@@ -26,19 +26,30 @@ local aim = gfx.sprite.new(aimimage)
 aim:moveTo(200, 120)
 aim:add()
 
-local lastaimangle = -1
+local MAX_VELOCITY = 8.0
 
-function updateaim(angle)
-	if (angle == lastaimangle) then
+local last_aim_angle = -1
+local last_aim_velocity = -1
+
+function updateaim(angle, velocity)
+	if (angle == last_aim_angle and velocity == last_aim_velocity) then
 		return
 	end
 	local x = 240 * math.tan(math.rad(angle))
 	newlineimage = gfx.image.new(400, 240)
 	gfx.pushContext(newlineimage)
+	-- Draw the thin line for the aim.
 	gfx.drawLine(0, 240, x, 0)
+	-- Draw the thick line for the velocity.
+	local percentVelocity = velocity / MAX_VELOCITY
+	playdate.graphics.setLineWidth(3)
+	gfx.drawLine(0, 240, x * percentVelocity, 240 - (240 * percentVelocity))
+	playdate.graphics.setLineWidth(1)
+	-- Complete.
 	gfx.popContext()
 	aim:setImage(newlineimage)
-	lastaimangle = angle
+	last_aim_angle = angle
+	last_aim_velocity = velocity
 end
 
 function calc_movement(velocity, angle)
@@ -56,7 +67,7 @@ local state = STATE_TITLE
 
 -- Player weapon.
 local angle = 45.0
-local velocity = 1.0
+local velocity = 0.0
 
 function playdate.update()
 	if (state == STATE_TITLE) then
@@ -65,7 +76,8 @@ function playdate.update()
 	end
 	if (state == STATE_SET_ANGLE) then
 		angle = playdate.getCrankPosition()
-		updateaim(angle)
+		angle = angle % 90
+		updateaim(angle, velocity)
 		if playdate.buttonJustReleased(playdate.kButtonA) then
 			change_state(STATE_SET_VELOCITY)
 			return
@@ -73,6 +85,7 @@ function playdate.update()
 	end
 	if (state == STATE_SET_VELOCITY) then
 		velocity = playdate.getCrankPosition() / 45
+		updateaim(angle, velocity)
 		if playdate.buttonJustReleased(playdate.kButtonA) then
 			change_state(STATE_FIRING)
 			return
@@ -80,13 +93,14 @@ function playdate.update()
 	end
 	if (state == STATE_FIRING) then
 		frame = frame + 1
-		local gravity = 0.1
+		local gravity = 0.09
 		local x, y = calc_movement(velocity, 90.0 - angle)
 		y = y - gravity * (frame / 2.0)
 		sprite:moveTo(sprite.x + x, sprite.y - y)
 		if (sprite.y > 250) then
 			sprite:moveTo(0, 240)
 			frame = 0
+			velocity = 0.0
 			change_state(STATE_TITLE)
 			return
 		end
