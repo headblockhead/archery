@@ -5,15 +5,41 @@ import "CoreLibs/timer"
 
 local gfx<const> = playdate.graphics
 
-local image = playdate.graphics.image.new("images/thing.png")
-local sprite = playdate.graphics.sprite.new(image)
-sprite:moveTo(0 + 31, 240 - 31) -- 31 is the width and height of the image
-sprite:add()
+local arcimage = gfx.image.new(60, 60)
+gfx.pushContext(arcimage)
+gfx.drawArc(0, 60, 60, 0, 90)
+gfx.popContext()
+local arc = gfx.sprite.new(arcimage)
+arc:moveTo(30, 210)
+arc:add()
 
-local image = playdate.graphics.image.new("images/ball.png")
-local sprite = playdate.graphics.sprite.new(image)
+local image = gfx.image.new("images/ball.png")
+local sprite = gfx.sprite.new(image)
 sprite:moveTo(0, 240)
 sprite:add()
+
+local aimimage = gfx.image.new(400, 240)
+gfx.pushContext(aimimage)
+gfx.drawLine(0, 0, 400, 240)
+gfx.popContext()
+local aim = gfx.sprite.new(aimimage)
+aim:moveTo(200, 120)
+aim:add()
+
+local lastaimangle = -1
+
+function updateaim(angle)
+	if (angle == lastaimangle) then
+		return
+	end
+	local x = 240 * math.tan(math.rad(angle))
+	newlineimage = gfx.image.new(400, 240)
+	gfx.pushContext(newlineimage)
+	gfx.drawLine(0, 240, x, 0)
+	gfx.popContext()
+	aim:setImage(newlineimage)
+	lastaimangle = angle
+end
 
 function calc_movement(velocity, angle)
 	local x = velocity * math.cos(math.rad(angle))
@@ -39,7 +65,7 @@ function playdate.update()
 	end
 	if (state == STATE_SET_ANGLE) then
 		angle = playdate.getCrankPosition()
-		-- TODO: Draw the line.
+		updateaim(angle)
 		if playdate.buttonJustReleased(playdate.kButtonA) then
 			change_state(STATE_SET_VELOCITY)
 			return
@@ -58,8 +84,9 @@ function playdate.update()
 		local x, y = calc_movement(velocity, 90.0 - angle)
 		y = y - gravity * (frame / 2.0)
 		sprite:moveTo(sprite.x + x, sprite.y - y)
-		if (y > 240) then
+		if (sprite.y > 250) then
 			sprite:moveTo(0, 240)
+			frame = 0
 			change_state(STATE_TITLE)
 			return
 		end
