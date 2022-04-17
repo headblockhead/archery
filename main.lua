@@ -5,6 +5,8 @@ import "CoreLibs/timer"
 
 local gfx<const> = playdate.graphics
 
+local timesnewroman = gfx.font.new("fonts/timesNR.fnt")
+
 local arc_image = gfx.image.new(60, 60)
 gfx.pushContext(arc_image)
 gfx.drawArc(0, 60, 60, 0, 90)
@@ -15,7 +17,7 @@ sprite_arc:add()
 
 local image_ball = gfx.image.new("images/ball.png")
 local sprite_ball = gfx.sprite.new(image_ball)
-sprite_ball:moveTo(0, 240)
+sprite_ball:moveTo(10, 230)
 sprite_ball:setCollideRect(0, 0, sprite_ball:getSize())
 sprite_ball:add()
 
@@ -25,11 +27,24 @@ sprite_meter:setZIndex(2)
 sprite_meter:moveTo(200, 8)
 sprite_meter:add()
 
+
+local meter_text_image = gfx.image.new(400, 16)
+gfx.pushContext(meter_text_image)
+gfx.setImageDrawMode(gfx.kDrawModeInverted)
+gfx.setFont(timesnewroman)
+gfx.drawText("velocity", 0, 0)
+gfx.popContext()
+local meter_text_sprite = gfx.sprite.new(meter_text_image)
+meter_text_sprite:setZIndex(4)
+meter_text_sprite:moveTo(207, 7)
+meter_text_sprite:add()
+gfx.setImageDrawMode(gfx.kDrawModeCopy)
+
 local meter_line_image = gfx.image.new(400, 16)
 gfx.pushContext(meter_line_image)
-playdate.graphics.setLineWidth(13)
-gfx.drawLine(0, 8, 400, 8)
-playdate.graphics.setLineWidth(1)
+gfx.setLineWidth(13)
+gfx.drawLine(6, 8, 100, 8)
+gfx.setLineWidth(1)
 gfx.popContext()
 local meter_line_sprite = gfx.sprite.new(meter_line_image)
 meter_line_sprite:setZIndex(3)
@@ -61,6 +76,13 @@ gfx.sprite.setBackgroundDrawingCallback(
 	end
 )
 
+--local tester = playdate.sound.sampleplayer.new("music/tester.wav")
+--tester:play()
+
+background_music = playdate.sound.fileplayer.new()
+background_music:load("music/bg.wav")
+background_music:play()
+
 local MAX_VELOCITY = 8.0
 
 local last_aim_angle = -1
@@ -72,34 +94,28 @@ function updatevelocity(velocity)
 	end
 	new_velocity_image = gfx.image.new(400, 16)
 	gfx.pushContext(new_velocity_image)
-	local scaled_velocity = (velocity / MAX_VELOCITY) * 400
-	playdate.graphics.setLineWidth(13)
-	gfx.drawLine(0, 8, scaled_velocity, 8)
-	playdate.graphics.setLineWidth(1)
+	local scaled_velocity = (velocity / MAX_VELOCITY) * 394
+	gfx.setLineWidth(13)
+	gfx.drawLine(6, 8, scaled_velocity + 6, 8)
+	gfx.setLineWidth(1)
 	-- Complete.
 	gfx.popContext()
 	meter_line_sprite:setImage(new_velocity_image)
 end
 
-function updateaim(angle, velocity)
-	if (angle == last_aim_angle and velocity == last_aim_velocity) then
+function updateaim(angle)
+	if (angle == last_aim_angle) then
 		return
 	end
 	local x = 240 * math.tan(math.rad(angle))
 	new_aim_image = gfx.image.new(400, 240)
 	gfx.pushContext(new_aim_image)
 	-- Draw the thin line for the aim.
-	gfx.drawLine(0, 240, x, 0)
-	-- Draw the thick line for the velocity.
-	local percent_velocity = velocity / MAX_VELOCITY
-	playdate.graphics.setLineWidth(3)
-	gfx.drawLine(0, 240, x * percent_velocity, 240 - (240 * percent_velocity))
-	playdate.graphics.setLineWidth(1)
+	gfx.drawLine(10, 230, x + 10, 0)
 	-- Complete.
 	gfx.popContext()
 	aim_sprite:setImage(new_aim_image)
 	last_aim_angle = angle
-	last_aim_velocity = velocity
 end
 
 function calc_movement(velocity, angle)
@@ -153,7 +169,7 @@ function playdate.update()
 		y = y - gravity * (frame / 2.0)
 		sprite_ball:moveTo(sprite_ball.x + x, sprite_ball.y - y)
 		if (sprite_ball.y > 250) then
-			sprite_ball:moveTo(0, 240)
+			sprite_ball:moveTo(10, 230)
 			frame = 0
 			velocity = 0.0
 			change_state(STATE_TITLE)
