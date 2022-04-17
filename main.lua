@@ -67,7 +67,18 @@ local last_aim_angle = -1
 local last_aim_velocity = -1
 
 function updatevelocity(velocity)
-
+	if (velocity == last_aim_velocity) then
+		return
+	end
+	new_velocity_image = gfx.image.new(400, 16)
+	gfx.pushContext(new_velocity_image)
+	local scaled_velocity = (velocity / MAX_VELOCITY) * 400
+	playdate.graphics.setLineWidth(13)
+	gfx.drawLine(0, 8, scaled_velocity, 8)
+	playdate.graphics.setLineWidth(1)
+	-- Complete.
+	gfx.popContext()
+	meter_line_sprite:setImage(new_velocity_image)
 end
 
 function updateaim(angle, velocity)
