@@ -5,7 +5,7 @@ import "CoreLibs/timer"
 
 local gfx<const> = playdate.graphics
 
-local timesnewroman = gfx.font.new("fonts/timesNR.fnt")
+local timesnewroman = gfx.font.new("fonts/ubuntuMONOreg")
 
 local arc_image = gfx.image.new(60, 60)
 gfx.pushContext(arc_image)
@@ -36,7 +36,7 @@ gfx.drawText("velocity", 0, 0)
 gfx.popContext()
 local meter_text_sprite = gfx.sprite.new(meter_text_image)
 meter_text_sprite:setZIndex(4)
-meter_text_sprite:moveTo(207, 7)
+meter_text_sprite:moveTo(207, 8)
 meter_text_sprite:add()
 gfx.setImageDrawMode(gfx.kDrawModeCopy)
 
@@ -51,11 +51,11 @@ meter_line_sprite:setZIndex(3)
 meter_line_sprite:moveTo(200, 8)
 meter_line_sprite:add()
 
-local image_enemy = gfx.image.new("images/enemy0.png")
-local sprite_enemy = gfx.sprite.new(image_enemy)
-sprite_enemy:moveTo(280, 208)
-sprite_enemy:setCollideRect(0, 0, sprite_ball:getSize())
-sprite_enemy:add()
+local enemy_image = gfx.image.new("images/enemy0.png")
+local enemy_sprite = gfx.sprite.new(enemy_image)
+enemy_sprite:moveTo(280, 208)
+enemy_sprite:setCollideRect(0, 0, sprite_ball:getSize())
+enemy_sprite:add()
 
 local aim_image = gfx.image.new(400, 240)
 gfx.pushContext(aim_image)
