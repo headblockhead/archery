@@ -3,11 +3,44 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
--- import "level0"
-
 local gfx<const> = playdate.graphics
-
 local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
+
+-- Base enemy.
+local enemy_image = gfx.image.new("images/enemy0")
+
+local enemy_sprite_1_1 = gfx.sprite.new(enemy_image)
+enemy_sprite_1_1:moveTo(280, 208)
+enemy_sprite_1_1:setCollideRect(0, 0, enemy_sprite_1_1:getSize())
+
+local enemy_sprite_2_1 = gfx.sprite.new(enemy_image)
+enemy_sprite_2_1:moveTo(140, 150)
+enemy_sprite_2_1:setCollideRect(0, 0, enemy_sprite_2_1:getSize())
+
+local enemy_sprite_2_2 = gfx.sprite.new(enemy_image)
+enemy_sprite_2_2:moveTo(180, 180)
+enemy_sprite_2_2:setCollideRect(0, 0, enemy_sprite_2_2:getSize())
+
+local level1 = {
+	enemies = { enemy_sprite_1_1 },
+}
+
+local level2 = {
+	enemies = { enemy_sprite_2_1, enemy_sprite_2_2 },
+}
+
+levels = { level1, level2 }
+
+function load_level(lvl)
+	if (lvl > 1) then
+		prev_level = levels[lvl - 1]
+		playdate.graphics.sprite.removeSprites(prev_level.enemies)
+	end
+	current_level = levels[lvl]
+	for _, enemy in ipairs(current_level.enemies) do
+		enemy:add()
+	end
+end
 
 local arc_image = gfx.image.new(60, 60)
 gfx.pushContext(arc_image)
@@ -53,12 +86,6 @@ meter_line_sprite:setZIndex(3)
 meter_line_sprite:moveTo(200, 8)
 meter_line_sprite:add()
 
-local enemy_image = gfx.image.new("images/enemy0")
-local enemy_sprite = gfx.sprite.new(enemy_image)
-enemy_sprite:moveTo(280, 208)
-enemy_sprite:setCollideRect(0, 0, sprite_ball:getSize())
-enemy_sprite:add()
-
 local aim_image = gfx.image.new(400, 240)
 gfx.pushContext(aim_image)
 gfx.drawLine(0, 0, 400, 240)
@@ -83,7 +110,7 @@ gfx.sprite.setBackgroundDrawingCallback(
 
 -- Background music
 -- background_music = playdate.sound.fileplayer.new()
--- background_music:load("music/level0int")
+-- background_music:load("music/level1int")
 -- background_music:play()
 
 local MAX_VELOCITY = 8.0
@@ -127,6 +154,7 @@ function calc_movement(velocity, angle)
 	return x, y
 end
 
+-- State.
 local frame = 0
 local STATE_TITLE = "title"
 local STATE_SET_ANGLE = "set_angle"
@@ -138,8 +166,12 @@ local state = STATE_TITLE
 local angle = 45.0
 local velocity = 0.0
 
+-- Level.
+local level = 1
+
 function playdate.update()
 	if (state == STATE_TITLE) then
+		load_level(level)
 		change_state(STATE_SET_ANGLE)
 		return
 	end
@@ -155,14 +187,14 @@ function playdate.update()
 	if (state == STATE_SET_VELOCITY) then
 		velocity = playdate.getCrankPosition() / 45
 		updatevelocity(velocity)
-		updateaim(angle, velocity)
+		updateaim(angle)
 		if playdate.buttonJustReleased(playdate.kButtonA) then
 			change_state(STATE_FIRING)
 			return
 		end
 	end
 	if (state == STATE_FIRING) then
-		for i, overlapsprite in pairs(sprite_ball:overlappingSprites()) do
+		for _, overlapsprite in pairs(sprite_ball:overlappingSprites()) do
 			overlapsprite:remove()
 		end
 		frame = frame + 1
@@ -174,6 +206,9 @@ function playdate.update()
 			sprite_ball:moveTo(10, 230)
 			frame = 0
 			velocity = 0.0
+			--TODO: Check that we've got cannonballs left?
+			--TODO: Check that we've hit all the targets?
+			level = level + 1
 			change_state(STATE_TITLE)
 			return
 		end
