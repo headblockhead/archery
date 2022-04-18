@@ -28,6 +28,7 @@ TNT_enemy_2_2:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
+levelcompleteSFX = playdate.sound.sampleplayer.new("SFX/lvl_complete")
 
 -- Define the levels.
 local level1 = {
@@ -267,12 +268,13 @@ function playdate.update()
 			ticks = 0
 			velocity = 0.0
 
-			if (used_cannonballs < level_cannonball_limit and defeated_enemies >= level_enimies_count) then
+			if (used_cannonballs <= level_cannonball_limit and defeated_enemies >= level_enimies_count) then
 				-- If all of the enimies have been defeated. (and within the cannonball limit)
 				level = level + 1
 				used_cannonballs = 0
 				defeated_enemies = 0
 				change_state(STATE_SET_ANGLE)
+				levelcompleteSFX:play()
 				load_level(level)
 				return
 			elseif (used_cannonballs >= level_cannonball_limit and defeated_enemies < level_enimies_count) then
