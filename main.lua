@@ -30,6 +30,7 @@ TNT_enemy_2_2:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
+ball_launchSFX = playdate.sound.sampleplayer.new("SFX/ball_launch")
 levelcompleteSFX = playdate.sound.sampleplayer.new("SFX/lvl_complete")
 ballFallSFX = playdate.sound.sampleplayer.new("SFX/ball_fall")
 clickSFX = playdate.sound.sampleplayer.new("SFX/tick")
@@ -250,6 +251,7 @@ function playdate.update()
 		updatevelocity(velocity)
 		updateaim(angle)
 		if playdate.buttonJustReleased(playdate.kButtonA) then
+			ball_launchSFX:play()
 			change_state(STATE_FIRING)
 			return
 		end
