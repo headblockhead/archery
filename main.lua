@@ -3,9 +3,11 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+-- import "level0"
+
 local gfx<const> = playdate.graphics
 
-local timesnewroman = gfx.font.new("fonts/ubuntuMONOreg")
+local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
 
 local arc_image = gfx.image.new(60, 60)
 gfx.pushContext(arc_image)
@@ -15,13 +17,13 @@ local sprite_arc = gfx.sprite.new(arc_image)
 sprite_arc:moveTo(30, 210)
 sprite_arc:add()
 
-local image_ball = gfx.image.new("images/ball.png")
+local image_ball = gfx.image.new("images/ball")
 local sprite_ball = gfx.sprite.new(image_ball)
 sprite_ball:moveTo(10, 230)
 sprite_ball:setCollideRect(0, 0, sprite_ball:getSize())
 sprite_ball:add()
 
-local meter_image = gfx.image.new("images/meter.png")
+local meter_image = gfx.image.new("images/meter")
 local sprite_meter = gfx.sprite.new(meter_image)
 sprite_meter:setZIndex(2)
 sprite_meter:moveTo(200, 8)
@@ -31,7 +33,7 @@ sprite_meter:add()
 local meter_text_image = gfx.image.new(400, 16)
 gfx.pushContext(meter_text_image)
 gfx.setImageDrawMode(gfx.kDrawModeInverted)
-gfx.setFont(timesnewroman)
+gfx.setFont(ubuntu_mono)
 gfx.drawText("velocity", 0, 0)
 gfx.popContext()
 local meter_text_sprite = gfx.sprite.new(meter_text_image)
@@ -51,7 +53,7 @@ meter_line_sprite:setZIndex(3)
 meter_line_sprite:moveTo(200, 8)
 meter_line_sprite:add()
 
-local enemy_image = gfx.image.new("images/enemy0.png")
+local enemy_image = gfx.image.new("images/enemy0")
 local enemy_sprite = gfx.sprite.new(enemy_image)
 enemy_sprite:moveTo(280, 208)
 enemy_sprite:setCollideRect(0, 0, sprite_ball:getSize())
@@ -65,7 +67,7 @@ local aim_sprite = gfx.sprite.new(aim_image)
 aim_sprite:moveTo(200, 120)
 aim_sprite:add()
 
-local background_image = gfx.image.new("images/background.png")
+local background_image = gfx.image.new("images/background")
 assert(background_image)
 
 gfx.sprite.setBackgroundDrawingCallback(
@@ -76,12 +78,13 @@ gfx.sprite.setBackgroundDrawingCallback(
 	end
 )
 
---local tester = playdate.sound.sampleplayer.new("music/tester.wav")
---tester:play()
+-- local tester = playdate.sound.sampleplayer.new("music/cannon_in_D")
+-- tester:play()
 
-background_music = playdate.sound.fileplayer.new()
-background_music:load("music/bg.wav")
-background_music:play()
+-- Background music
+-- background_music = playdate.sound.fileplayer.new()
+-- background_music:load("music/level0int")
+-- background_music:play()
 
 local MAX_VELOCITY = 8.0
 
@@ -143,8 +146,7 @@ function playdate.update()
 	if (state == STATE_SET_ANGLE) then
 		angle = playdate.getCrankPosition()
 		angle = angle / 4
-		--angle = angle % 90
-		updateaim(angle, velocity)
+		updateaim(angle)
 		if playdate.buttonJustReleased(playdate.kButtonA) then
 			change_state(STATE_SET_VELOCITY)
 			return
