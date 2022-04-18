@@ -12,6 +12,8 @@ local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
 -- Define enemy sprites.
 local TNT_image = gfx.image.new("images/enemy0")
 
+print(playdate.display.getScale())
+
 -- Format: enemy_sprite_<LEVEL>_<INDEX>
 
 local TNT_enemy_1_1 = gfx.sprite.new(TNT_image)
@@ -29,6 +31,14 @@ TNT_enemy_2_2:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
 levelcompleteSFX = playdate.sound.sampleplayer.new("SFX/lvl_complete")
+ballFallSFX = playdate.sound.sampleplayer.new("SFX/ball_fall")
+clickSFX = playdate.sound.sampleplayer.new("SFX/tick")
+
+--Setup the crank
+-- playdate.setCrankSoundsDisabled(true)
+function playdate.cranked()
+	clickSFX:play()
+end
 
 -- Define the levels.
 local level1 = {
@@ -280,9 +290,11 @@ function playdate.update()
 			elseif (used_cannonballs >= level_cannonball_limit and defeated_enemies < level_enimies_count) then
 				-- If the cannonball limit has been reached. (Game Over)
 				change_state(STATE_GAME_OVER)
+				ballFallSFX:play()
 				return
 			end
 			-- If there are still cannonballs left (and all of the enimies have not been defeated).
+			ballFallSFX:play()
 			change_state(STATE_SET_ANGLE)
 		end
 	end
