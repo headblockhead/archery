@@ -9,6 +9,8 @@ local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
 -- Base enemy.
 local enemy_image = gfx.image.new("images/enemy0")
 
+-- Format: enemy_sprite_<LEVEL>_<INDEX>
+
 local enemy_sprite_1_1 = gfx.sprite.new(enemy_image)
 enemy_sprite_1_1:moveTo(280, 208)
 enemy_sprite_1_1:setCollideRect(0, 0, enemy_sprite_1_1:getSize())
