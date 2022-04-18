@@ -23,10 +23,12 @@ enemy_sprite_2_2:setCollideRect(0, 0, enemy_sprite_2_2:getSize())
 
 local level1 = {
 	enemies = { enemy_sprite_1_1 },
+	cannonballs = 3,
 }
 
 local level2 = {
 	enemies = { enemy_sprite_2_1, enemy_sprite_2_2 },
+	cannonballs = 1,
 }
 
 levels = { level1, level2 }
@@ -40,6 +42,8 @@ function load_level(lvl)
 	for _, enemy in ipairs(current_level.enemies) do
 		enemy:add()
 	end
+	cannonball_limit = current_level.cannonballs
+	level_enemies = #current_level.enemies
 end
 
 local arc_image = gfx.image.new(60, 60)
@@ -157,6 +161,7 @@ end
 -- State.
 local frame = 0
 local STATE_TITLE = "title"
+local STATE_GAME_OVER = "game_over"
 local STATE_SET_ANGLE = "set_angle"
 local STATE_SET_VELOCITY = "set_velocity"
 local STATE_FIRING = "firing"
@@ -165,14 +170,18 @@ local state = STATE_TITLE
 -- Player weapon.
 local angle = 45.0
 local velocity = 0.0
+local cannonballs_used = 0
+local defeated_enemies = 0
 
 -- Level.
 local level = 1
-
 function playdate.update()
 	if (state == STATE_TITLE) then
 		load_level(level)
 		change_state(STATE_SET_ANGLE)
+		return
+	end
+	if (state == STATE_GAME_OVER) then
 		return
 	end
 	if (state == STATE_SET_ANGLE) then
@@ -196,6 +205,7 @@ function playdate.update()
 	if (state == STATE_FIRING) then
 		for _, overlapsprite in pairs(sprite_ball:overlappingSprites()) do
 			overlapsprite:remove()
+			defeated_enemies = defeated_enemies + 1
 		end
 		frame = frame + 1
 		local gravity = 0.14
@@ -206,11 +216,20 @@ function playdate.update()
 			sprite_ball:moveTo(10, 230)
 			frame = 0
 			velocity = 0.0
-			--TODO: Check that we've got cannonballs left?
-			--TODO: Check that we've hit all the targets?
-			level = level + 1
-			change_state(STATE_TITLE)
-			return
+			if (cannonballs_used < cannonball_limit and defeated_enemies >= level_enemies) then
+				print("level complete")
+				level = level + 1
+				cannonballs_used = 0
+				defeated_enemies = 0
+				change_state(STATE_SET_ANGLE)
+				load_level(level)
+				return
+			elseif (cannonballs_used >= cannonball_limit and defeated_enemies < level_enemies) then
+				change_state(STATE_GAME_OVER)
+				return
+			end
+			change_state(STATE_SET_ANGLE)
+			cannonballs_used = cannonballs_used + 1
 		end
 	end
 	gfx.sprite.update()
