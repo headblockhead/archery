@@ -26,6 +26,9 @@ local TNT_enemy_2_2 = gfx.sprite.new(TNT_image)
 TNT_enemy_2_2:moveTo(260, 208)
 TNT_enemy_2_2:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
 
+-- Define sound FX players
+explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
+
 -- Define the levels.
 local level1 = {
 	enemies = { TNT_enemy_1_1 },
@@ -243,7 +246,7 @@ function playdate.update()
 
 	if (state == STATE_FIRING) then
 		for _, overlapping_sprite in pairs(sprite_ball:overlappingSprites()) do
-			--TODO: add explosion SFX
+			explosionSFX:play()
 			overlapping_sprite:remove()
 			defeated_enemies = defeated_enemies + 1
 		end
