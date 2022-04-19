@@ -2,6 +2,7 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
+import "CoreLibs/animation"
 
 -- GFX as a useful shorthand for the playdate's graphics.
 local gfx<const> = playdate.graphics
@@ -36,10 +37,7 @@ ballFallSFX = playdate.sound.sampleplayer.new("SFX/ball_fall")
 clickSFX = playdate.sound.sampleplayer.new("SFX/tick")
 
 --Setup the crank
--- playdate.setCrankSoundsDisabled(true)
-function playdate.cranked()
-	clickSFX:play()
-end
+playdate.setCrankSoundsDisabled(true)
 
 -- Define the levels.
 local level1 = {
@@ -140,6 +138,35 @@ meter_line_sprite:setZIndex(3)
 meter_line_sprite:moveTo(200, 8)
 meter_line_sprite:add()
 
+local ball_text_bg_image = gfx.image.new(40, 16)
+
+gfx.pushContext(ball_text_bg_image)
+
+gfx.fillRect(11, 0, 29, 16)
+
+gfx.popContext()
+
+local ball_text_bg_sprite = gfx.sprite.new(ball_text_bg_image)
+ball_text_bg_sprite:setZIndex(4)
+ball_text_bg_sprite:moveTo(380, 8)
+ball_text_bg_sprite:add()
+
+local ball_text_image = gfx.image.new(40, 16)
+
+gfx.pushContext(ball_text_image)
+
+gfx.setImageDrawMode(gfx.kDrawModeInverted)
+gfx.setFont(ubuntu_mono)
+gfx.drawText("?/?", 13, 0)
+
+gfx.popContext()
+
+local ball_text_sprite = gfx.sprite.new(ball_text_image)
+ball_text_sprite:setZIndex(5)
+ball_text_sprite:moveTo(380, 8)
+ball_text_sprite:add()
+gfx.setImageDrawMode(gfx.kDrawModeCopy)
+
 -- Draw the background
 local background_image = gfx.image.new("images/background")
 assert(background_image)
@@ -166,7 +193,7 @@ function updatevelocity(velocity)
 
 	gfx.pushContext(new_velocity_image)
 
-	local scaled_velocity = (velocity / MAX_VELOCITY) * 394
+	local scaled_velocity = (velocity / MAX_VELOCITY) * 359
 	gfx.setLineWidth(13)
 	gfx.drawLine(6, 8, scaled_velocity + 6, 8)
 	gfx.setLineWidth(1)
@@ -175,6 +202,26 @@ function updatevelocity(velocity)
 
 	meter_line_sprite:setImage(new_velocity_image)
 end
+
+function updateballs(used, max)
+	new_ball_text_image = gfx.image.new(40, 16)
+
+	gfx.pushContext(new_ball_text_image)
+
+	gfx.setImageDrawMode(gfx.kDrawModeInverted)
+	gfx.setFont(ubuntu_mono)
+	gfx.drawText(used .. "/" .. max, 13, 0)
+
+	gfx.popContext()
+
+	ball_text_sprite:setImage(new_ball_text_image)
+	gfx.setImageDrawMode(gfx.kDrawModeCopy)
+end
+
+local transition_image = gfx.image.new("images/transition")
+local transition_sprite = gfx.sprite.new(transition_image)
+transition_sprite:setZIndex(15)
+transition_sprite:moveTo(800, 120) -- Offscreen
 
 -- Draw a line to show the angle that is being aimed at.
 function updateaim(angle)
@@ -228,6 +275,7 @@ function playdate.update()
 	if (state == STATE_TITLE) then
 		--TODO: add title screen
 		load_level(level)
+		updateballs(used_cannonballs, level_cannonball_limit)
 		change_state(STATE_SET_ANGLE)
 		return
 	end
@@ -285,12 +333,18 @@ function playdate.update()
 				level = level + 1
 				used_cannonballs = 0
 				defeated_enemies = 0
+				-- TODO: add level transition
+				transition_sprite:add()
+				-- TODO: move from right to left
+
 				change_state(STATE_SET_ANGLE)
 				levelcompleteSFX:play()
 				load_level(level)
+				updateballs(used_cannonballs, level_cannonball_limit)
 				return
 			elseif (used_cannonballs >= level_cannonball_limit and defeated_enemies < level_enimies_count) then
 				-- If the cannonball limit has been reached. (Game Over)
+				updateballs(used_cannonballs, level_cannonball_limit)
 				change_state(STATE_GAME_OVER)
 				ballFallSFX:play()
 				return
@@ -298,6 +352,7 @@ function playdate.update()
 			-- If there are still cannonballs left (and all of the enimies have not been defeated).
 			ballFallSFX:play()
 			change_state(STATE_SET_ANGLE)
+			updateballs(used_cannonballs, level_cannonball_limit)
 		end
 	end
 
