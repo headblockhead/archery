@@ -3,7 +3,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/animation"
-
+import "CoreLibs/easing"
 -- GFX as a useful shorthand for the playdate's graphics.
 local gfx<const> = playdate.graphics
 
@@ -12,8 +12,6 @@ local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
 
 -- Define enemy sprites.
 local TNT_image = gfx.image.new("images/enemy0")
-
-print(playdate.display.getScale())
 
 -- Format: enemy_sprite_<LEVEL>_<INDEX>
 
@@ -253,7 +251,12 @@ end
 -- Ticks are how long the ball has been in the air.
 local ticks = 0
 
+-- easing ticks for level transition
+local inticks = 0
+local outticks = 0
+
 -- State.
+local STATE_LEVEL_TRANSITION = "transition"
 local STATE_TITLE = "title"
 local STATE_GAME_OVER = "game_over"
 local STATE_SET_ANGLE = "set_angle"
@@ -332,15 +335,13 @@ function playdate.update()
 				-- If all of the enimies have been defeated. (and within the cannonball limit)
 				level = level + 1
 				used_cannonballs = 0
+				inticks = 0
+				outticks = 0
 				defeated_enemies = 0
-				-- TODO: add level transition
-				transition_sprite:add()
-				-- TODO: move from right to left
-
-				change_state(STATE_SET_ANGLE)
 				levelcompleteSFX:play()
-				load_level(level)
-				updateballs(used_cannonballs, level_cannonball_limit)
+				transition_sprite:moveTo(800, 120)
+				transition_sprite:add()
+				change_state(STATE_LEVEL_TRANSITION)
 				return
 			elseif (used_cannonballs >= level_cannonball_limit and defeated_enemies < level_enimies_count) then
 				-- If the cannonball limit has been reached. (Game Over)
@@ -355,15 +356,32 @@ function playdate.update()
 			updateballs(used_cannonballs, level_cannonball_limit)
 		end
 	end
-
+	if (state == STATE_LEVEL_TRANSITION) then
+		if (inticks < 40) then
+			inticks = inticks + 1
+			xpos = playdate.easingFunctions.inSine(inticks, 800, -600, 40)
+			transition_sprite:moveTo(xpos, 120)
+		elseif (inticks == 40) then
+			-- Load the level
+			load_level(level)
+			updateballs(used_cannonballs, level_cannonball_limit)
+			inticks = inticks + 1
+		elseif (outticks < 40) then
+			outticks = outticks + 1
+			xpos = playdate.easingFunctions.inSine(outticks, 200, -600, 40)
+			transition_sprite:moveTo(xpos, 120)
+		else
+			change_state(STATE_SET_ANGLE)
+			transition_sprite:remove()
+			return
+		end
+	end
 	gfx.sprite.update()
 	playdate.timer.updateTimers()
-
 end
 
 function change_state(new_state)
 	state = new_state
-
 	gfx.sprite.update()
 	playdate.timer.updateTimers()
 end
