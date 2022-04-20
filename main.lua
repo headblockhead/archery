@@ -359,7 +359,7 @@ function playdate.update()
 	if (state == STATE_LEVEL_TRANSITION) then
 		if (inticks < 40) then
 			inticks = inticks + 1
-			xpos = playdate.easingFunctions.inSine(inticks, 800, -600, 40)
+			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
 			transition_sprite:moveTo(xpos, 120)
 		elseif (inticks == 40) then
 			-- Load the level
@@ -368,7 +368,7 @@ function playdate.update()
 			inticks = inticks + 1
 		elseif (outticks < 40) then
 			outticks = outticks + 1
-			xpos = playdate.easingFunctions.inSine(outticks, 200, -600, 40)
+			xpos = playdate.easingFunctions.inOutSine(outticks, 200, -600, 40)
 			transition_sprite:moveTo(xpos, 120)
 		else
 			change_state(STATE_SET_ANGLE)
