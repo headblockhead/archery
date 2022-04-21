@@ -12,20 +12,36 @@ local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
 
 -- Define enemy sprites.
 local TNT_image = gfx.image.new("images/enemy0")
+local Wall_image = gfx.image.new("images/enemy1")
 
 -- Format: enemy_sprite_<LEVEL>_<INDEX>
 
 local TNT_enemy_1_1 = gfx.sprite.new(TNT_image)
 TNT_enemy_1_1:moveTo(280, 208)
 TNT_enemy_1_1:setCollideRect(0, 0, TNT_enemy_1_1:getSize())
+-- Tag of 1 is destructable.
+TNT_enemy_1_1:setTag(1)
 
 local TNT_enemy_2_1 = gfx.sprite.new(TNT_image)
 TNT_enemy_2_1:moveTo(270, 208)
 TNT_enemy_2_1:setCollideRect(0, 0, TNT_enemy_2_1:getSize())
+TNT_enemy_2_1:setTag(1)
 
 local TNT_enemy_2_2 = gfx.sprite.new(TNT_image)
-TNT_enemy_2_2:moveTo(260, 208)
+TNT_enemy_2_2:moveTo(240, 208)
 TNT_enemy_2_2:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
+TNT_enemy_2_2:setTag(1)
+
+local wall_3_1 = gfx.sprite.new(Wall_image)
+wall_3_1:moveTo(200, 168)
+wall_3_1:setCollideRect(0, 0, wall_3_1:getSize())
+-- Tag of 2 is not destructable.
+wall_3_1:setTag(2)
+
+local TNT_enemy_3_2 = gfx.sprite.new(TNT_image)
+TNT_enemy_3_2:moveTo(260, 190)
+TNT_enemy_3_2:setCollideRect(0, 0, TNT_enemy_3_2:getSize())
+TNT_enemy_3_2:setTag(1)
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
@@ -40,15 +56,29 @@ playdate.setCrankSoundsDisabled(true)
 -- Define the levels.
 local level1 = {
 	enemies = { TNT_enemy_1_1 },
-	cannonballs = 3,
+	walls = {},
+	cannonballs = 1,
 }
 
 local level2 = {
 	enemies = { TNT_enemy_2_1, TNT_enemy_2_2 },
-	cannonballs = 1,
+	walls = {},
+	cannonballs = 2,
 }
 
-levels = { level1, level2 }
+local level3 = {
+	enemies = { TNT_enemy_3_2 },
+	walls = { wall_3_1 },
+	cannonballs = 7,
+}
+
+local level4 = {
+	enemies = { TNT_enemy_2_1, TNT_enemy_2_2 },
+	walls = {},
+	cannonballs = 2,
+}
+
+levels = { level1, level2, level3, level4 }
 
 function load_level(lvl)
 	-- Clear the playfield for the next level
@@ -60,6 +90,9 @@ function load_level(lvl)
 	current_level = levels[lvl]
 	for _, enemy in ipairs(current_level.enemies) do
 		enemy:add()
+	end
+	for _, wall in ipairs(current_level.walls) do
+		wall:add()
 	end
 	level_cannonball_limit = current_level.cannonballs
 	level_enimies_count = #current_level.enemies
@@ -310,9 +343,13 @@ function playdate.update()
 
 	if (state == STATE_FIRING) then
 		for _, overlapping_sprite in pairs(sprite_ball:overlappingSprites()) do
-			explosionSFX:play()
-			overlapping_sprite:remove()
-			defeated_enemies = defeated_enemies + 1
+			if (overlapping_sprite:getTag() == 1) then
+				explosionSFX:play()
+				overlapping_sprite:remove()
+				defeated_enemies = defeated_enemies + 1
+			elseif (overlapping_sprite:getTag() == 2) then
+				sprite_ball.y = 280
+			end
 		end
 
 		ticks = ticks + 1
