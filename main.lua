@@ -316,6 +316,8 @@ local angle = 45.0
 local velocity = 0.0
 local used_cannonballs = 0
 local defeated_enemies = 0
+local projectile_angle = 45.0
+local projectile_path = {}
 
 -- Level.
 local level = 1
@@ -352,6 +354,7 @@ function playdate.update()
 		angle = playdate.getCrankPosition()
 		angle = angle / 4
 		updateaim(angle)
+		projectile_angle = angle
 		if playdate.buttonJustReleased(playdate.kButtonA) then
 			change_state(STATE_SET_VELOCITY)
 			return
@@ -387,6 +390,18 @@ function playdate.update()
 		y = y - gravity * (ticks / 2.0)
 
 		sprite_ball:moveTo(sprite_ball.x + x, sprite_ball.y - y)
+		start = { x = 0, y = 240 }
+		table.insert(projectile_path, { x = sprite_ball.x + x, y = sprite_ball.y + y })
+		if #projectile_path > 20 then
+			start = projectile_path[1]
+			table.remove(projectile_path, 1)
+		end
+		-- s=o/h c=a/h t=o/a
+
+		xx = sprite_ball.x - start.x
+		yy = sprite_ball.y - start.y
+		projectile_angle = (math.deg(math.atan(yy, xx)) + 90) % 360
+		sprite_ball:setRotation(projectile_angle)
 
 		-- If the ball has gone below the screen.
 		if (sprite_ball.y > 250) then
