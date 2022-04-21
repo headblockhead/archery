@@ -13,6 +13,7 @@ local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
 -- Define enemy sprites.
 local TNT_image = gfx.image.new("images/enemy0")
 local Wall_image = gfx.image.new("images/enemy1")
+local Box_image = gfx.image.new("images/enemy2")
 
 -- Format: enemy_sprite_<LEVEL>_<INDEX>
 
@@ -38,10 +39,10 @@ wall_3_1:setCollideRect(0, 0, wall_3_1:getSize())
 -- Tag of 2 is not destructable.
 wall_3_1:setTag(2)
 
-local TNT_enemy_3_2 = gfx.sprite.new(TNT_image)
-TNT_enemy_3_2:moveTo(260, 190)
-TNT_enemy_3_2:setCollideRect(0, 0, TNT_enemy_3_2:getSize())
-TNT_enemy_3_2:setTag(1)
+local BOX_enemy_3_2 = gfx.sprite.new(Box_image)
+BOX_enemy_3_2:moveTo(360, 211)
+BOX_enemy_3_2:setCollideRect(0, 0, BOX_enemy_3_2:getSize())
+BOX_enemy_3_2:setTag(1)
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
@@ -67,24 +68,37 @@ local level2 = {
 }
 
 local level3 = {
-	enemies = { TNT_enemy_3_2 },
+	enemies = { BOX_enemy_3_2 },
 	walls = { wall_3_1 },
 	cannonballs = 7,
 }
 
-local level4 = {
-	enemies = { TNT_enemy_2_1, TNT_enemy_2_2 },
-	walls = {},
-	cannonballs = 2,
-}
+levels = { level1, level2, level3 }
 
-levels = { level1, level2, level3, level4 }
+function debug_load_level(lvl)
+	-- Clear the playfield for the new level
+	for _, level in ipairs(levels) do
+		playdate.graphics.sprite.removeSprites(level.enemies)
+		playdate.graphics.sprite.removeSprites(level.walls)
+	end
+	-- Load the NEW level
+	current_level = levels[lvl]
+	for _, enemy in ipairs(current_level.enemies) do
+		enemy:add()
+	end
+	for _, wall in ipairs(current_level.walls) do
+		wall:add()
+	end
+	level_cannonball_limit = current_level.cannonballs
+	level_enimies_count = #current_level.enemies
+end
 
 function load_level(lvl)
 	-- Clear the playfield for the next level
 	if (lvl > 1) then
 		prev_level = levels[lvl - 1]
 		playdate.graphics.sprite.removeSprites(prev_level.enemies)
+		playdate.graphics.sprite.removeSprites(prev_level.walls)
 	end
 	-- Load the next level
 	current_level = levels[lvl]
@@ -305,6 +319,20 @@ local defeated_enemies = 0
 
 -- Level.
 local level = 1
+
+function playdate.keyPressed(key)
+	if (key == "a") then
+		return
+	else
+		level = tonumber(key)
+		used_cannonballs = 0
+		inticks = 0
+		outticks = 0
+		defeated_enemies = 0
+		debug_load_level(tonumber(key))
+		updateballs(used_cannonballs, level_cannonball_limit)
+	end
+end
 
 -- Run on every frame
 function playdate.update()
