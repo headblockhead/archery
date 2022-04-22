@@ -33,6 +33,12 @@ TNT_enemy_2_2:moveTo(240, 208)
 TNT_enemy_2_2:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
 TNT_enemy_2_2:setTag(1)
 
+local TNT_enemy_4_1 = gfx.sprite.new(TNT_image)
+TNT_enemy_4_1:moveTo(240, 170)
+TNT_enemy_4_1:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
+TNT_enemy_4_1:setTag(1)
+
+
 local wall_3_1 = gfx.sprite.new(Wall_image)
 wall_3_1:moveTo(200, 168)
 wall_3_1:setCollideRect(0, 0, wall_3_1:getSize())
@@ -73,7 +79,13 @@ local level3 = {
 	cannonballs = 7,
 }
 
-levels = { level1, level2, level3 }
+local level4 = {
+	enemies = { TNT_enemy_4_1 },
+	walls = {},
+	cannonballs = 4,
+}
+
+levels = { level1, level2, level3, level4 }
 
 function debug_load_level(lvl)
 	-- Clear the playfield for the new level
@@ -276,6 +288,9 @@ function updateaim(angle)
 	end
 
 	local x = 240 * math.tan(math.rad(angle))
+
+	sprite_ball:setRotation(angle)
+
 	new_aim_image = gfx.image.new(400, 240)
 
 	gfx.pushContext(new_aim_image)
@@ -400,13 +415,14 @@ function playdate.update()
 
 		xx = sprite_ball.x - start.x
 		yy = sprite_ball.y - start.y
-		projectile_angle = (math.deg(math.atan(yy, xx)) + 90) % 360
+		projectile_angle = (math.deg(math.atan(yy, xx) + 90)) % 360
 		sprite_ball:setRotation(projectile_angle)
+		sprite_ball:setCollideRect(0, 0, sprite_ball:getSize())
 
 		-- If the ball has gone below the screen.
 		if (sprite_ball.y > 250) then
 			used_cannonballs = used_cannonballs + 1
-
+			sprite_ball:setRotation(90)
 			sprite_ball:moveTo(10, 230)
 			ticks = 0
 			velocity = 0.0
@@ -445,6 +461,7 @@ function playdate.update()
 			-- Load the level
 			load_level(level)
 			updateballs(used_cannonballs, level_cannonball_limit)
+			sprite_ball:setRotation(90)
 			inticks = inticks + 1
 		elseif (outticks < 40) then
 			outticks = outticks + 1
