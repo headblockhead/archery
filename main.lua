@@ -338,9 +338,7 @@ local projectile_path = {}
 local level = 1
 
 function playdate.keyPressed(key)
-	if (key == "a") then
-		return
-	else
+	if (not key:find("%D")) then
 		level = tonumber(key)
 		used_cannonballs = 0
 		inticks = 0
