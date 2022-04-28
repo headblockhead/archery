@@ -406,6 +406,10 @@ function playdate.update()
 		xx = sprite_ball.x - start.x
 		yy = sprite_ball.y - start.y
 		projectile_angle = (math.deg(math.atan(yy, xx) + 90)) % 360
+		-- The arrow should not be facing backwards. If it is, face it straight down.
+		if (projectile_angle > 180) then
+			projectile_angle = 180
+		end
 		sprite_ball:setRotation(projectile_angle)
 		sprite_ball:setCollideRect(0, 0, sprite_ball:getSize())
 
