@@ -16,39 +16,48 @@ local Wall_image = gfx.image.new("images/enemy1")
 local Box_image = gfx.image.new("images/enemy2")
 
 -- Format: enemy_sprite_<LEVEL>_<INDEX>
+-- TAGS:
+-- 1 = destrctable
+-- 2 = indestructable
 
-local TNT_enemy_1_1 = gfx.sprite.new(TNT_image)
+-- LEVEL 1
+local TNT_enemy_1_1 = gfx.sprite.new(Box_image)
 TNT_enemy_1_1:moveTo(280, 208)
 TNT_enemy_1_1:setCollideRect(0, 0, TNT_enemy_1_1:getSize())
--- Tag of 1 is destructable.
 TNT_enemy_1_1:setTag(1)
 
+local level1 = {
+	enemies = { TNT_enemy_1_1 },
+	walls = {},
+	cannonballs = 3,
+}
+
+-- LEVEL 2
 local TNT_enemy_2_1 = gfx.sprite.new(TNT_image)
-TNT_enemy_2_1:moveTo(270, 208)
+TNT_enemy_2_1:moveTo(280, 208)
 TNT_enemy_2_1:setCollideRect(0, 0, TNT_enemy_2_1:getSize())
 TNT_enemy_2_1:setTag(1)
 
-local TNT_enemy_2_2 = gfx.sprite.new(TNT_image)
-TNT_enemy_2_2:moveTo(240, 208)
-TNT_enemy_2_2:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
-TNT_enemy_2_2:setTag(1)
+local level2 = {
+	enemies = { TNT_enemy_2_1 },
+	walls = {},
+	cannonballs = 3,
+}
 
-local TNT_enemy_4_1 = gfx.sprite.new(TNT_image)
-TNT_enemy_4_1:moveTo(240, 170)
-TNT_enemy_4_1:setCollideRect(0, 0, TNT_enemy_2_2:getSize())
-TNT_enemy_4_1:setTag(1)
+-- LEVEL 3
+local TNT_enemy_3_1 = gfx.sprite.new(TNT_image)
+TNT_enemy_3_1:moveTo(380, 208)
+TNT_enemy_3_1:setCollideRect(0, 0, TNT_enemy_3_1:getSize())
+TNT_enemy_3_1:setTag(1)
 
+local level3 = {
+	enemies = { TNT_enemy_3_1 },
+	walls = {},
+	cannonballs = 3,
+}
 
-local wall_3_1 = gfx.sprite.new(Wall_image)
-wall_3_1:moveTo(200, 168)
-wall_3_1:setCollideRect(0, 0, wall_3_1:getSize())
--- Tag of 2 is not destructable.
-wall_3_1:setTag(2)
+levels = { level1, level2, level3 }
 
-local BOX_enemy_3_2 = gfx.sprite.new(Box_image)
-BOX_enemy_3_2:moveTo(360, 211)
-BOX_enemy_3_2:setCollideRect(0, 0, BOX_enemy_3_2:getSize())
-BOX_enemy_3_2:setTag(1)
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
@@ -59,33 +68,6 @@ clickSFX = playdate.sound.sampleplayer.new("SFX/tick")
 
 --Setup the crank
 playdate.setCrankSoundsDisabled(true)
-
--- Define the levels.
-local level1 = {
-	enemies = { TNT_enemy_1_1 },
-	walls = {},
-	cannonballs = 1,
-}
-
-local level2 = {
-	enemies = { TNT_enemy_2_1, TNT_enemy_2_2 },
-	walls = {},
-	cannonballs = 2,
-}
-
-local level3 = {
-	enemies = { BOX_enemy_3_2 },
-	walls = { wall_3_1 },
-	cannonballs = 7,
-}
-
-local level4 = {
-	enemies = { TNT_enemy_4_1 },
-	walls = {},
-	cannonballs = 4,
-}
-
-levels = { level1, level2, level3, level4 }
 
 function debug_load_level(lvl)
 	-- Clear the playfield for the new level
@@ -337,15 +319,25 @@ local projectile_path = {}
 -- Level.
 local level = 1
 
+-- Debug for loading long-digit levels
+local buffer = 0
+local bufferindex = 1
 function playdate.keyPressed(key)
 	if (not key:find("%D")) then
-		level = tonumber(key)
+		buffer = buffer + (tonumber(key) / bufferindex)
+		bufferindex = bufferindex * 10
+	end
+	if (key == "P") then
+		print(buffer * (bufferindex / 10))
+		level = tonumber(buffer * (bufferindex / 10))
 		used_cannonballs = 0
 		inticks = 0
 		outticks = 0
 		defeated_enemies = 0
-		debug_load_level(tonumber(key))
+		debug_load_level(tonumber(buffer * (bufferindex / 10)))
 		updateballs(used_cannonballs, level_cannonball_limit)
+		buffer = 0
+		bufferindex = 1
 	end
 end
 
