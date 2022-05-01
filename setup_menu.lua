@@ -6,7 +6,7 @@ function setup_menu(autosave)
         saveauto(value)
     end)
 
-    local menuItem2, error = menu:addMenuItem("Title", function()
+    local menuItem2, error = menu:addMenuItem("to title", function()
         --TODO: conformation dialog for save
         used_cannonballs = 0
         inticks = 0
@@ -15,7 +15,7 @@ function setup_menu(autosave)
         change_state("title")
     end)
 
-    local menuItem, error = menu:addMenuItem("Save now", function()
+    local menuItem, error = menu:addMenuItem("Save", function()
         save(1)
     end)
 
@@ -30,7 +30,7 @@ function update_menu(level, oldmenuitem)
     --Add settings to menu
     local menu = playdate.getSystemMenu()
     menu:removeMenuItem(oldmenuitem)
-    local menuItem, error = menu:addMenuItem("Save now", function()
+    local menuItem, error = menu:addMenuItem("Save", function()
         save(level)
     end)
 end

@@ -123,6 +123,10 @@ function playdate.keyPressed(key)
 		inticks = 0
 		outticks = 0
 		defeated_enemies = 0
+		update_menu(level, oldMenuItem)
+		if (autosave) then
+			save(level)
+		end
 		debug_load_level(tonumber(buffer * (bufferindex / 10)))
 		updateballs(used_cannonballs, level_cannonball_limit)
 		buffer = 0
@@ -496,6 +500,9 @@ function playdate.update()
 			transition_sprite:moveTo(xpos, 120)
 		elseif (inticks == 40) then
 			-- Load the level
+			if (autosave) then
+				save(level)
+			end
 			load_level(level)
 			updateballs(used_cannonballs, level_cannonball_limit)
 			sprite_arrow:setRotation(90)
@@ -505,9 +512,6 @@ function playdate.update()
 			xpos = playdate.easingFunctions.inOutSine(outticks, 200, -600, 40)
 			transition_sprite:moveTo(xpos, 120)
 		else
-			if (autosave) then
-				save(level)
-			end
 			change_state(STATE_SET_ANGLE)
 			transition_sprite:remove()
 			return
