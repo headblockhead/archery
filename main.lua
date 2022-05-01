@@ -402,7 +402,6 @@ local menuItem2, error = menu:addMenuItem("Title", function()
 	inticks = 0
 	outticks = 0
 	defeated_enemies = 0
-	print("Open Title")
 	change_state(STATE_TITLE)
 end)
 
@@ -501,7 +500,6 @@ function playdate.update()
 			if (used_cannonballs <= level_cannonball_limit and defeated_enemies >= level_enimies_count) then
 				-- If all of the enimies have been defeated. (and within the cannonball limit)
 				level = level + 1
-				print(level)
 				used_cannonballs = 0
 				inticks = 0
 				outticks = 0
@@ -553,10 +551,8 @@ function playdate.update()
 end
 
 function change_state(new_state)
-	print("State was: " .. state)
 	state = new_state
-	print("State changed to: " .. new_state)
-	print("State is: " .. state)
+	print("State changed to: " .. state)
 	gfx.sprite.update()
 	playdate.timer.updateTimers()
 end
