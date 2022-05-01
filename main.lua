@@ -13,7 +13,7 @@ local gfx <const> = playdate.graphics
 --Load the autosave status
 local autosave = load_autosave()
 
-setup_menu(autosave)
+local oldMenuItem = setup_menu(autosave)
 
 -- Define fonts that will be used.
 local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
@@ -379,9 +379,7 @@ local projectile_angle = 45.0
 local projectile_path = {}
 
 -- Level.
-local level = 1
-
-
+-- local level = 1
 
 -- Run on every frame
 function playdate.update()
@@ -468,6 +466,7 @@ function playdate.update()
 			if (used_cannonballs <= level_cannonball_limit and defeated_enemies >= level_enimies_count) then
 				-- If all of the enimies have been defeated. (and within the cannonball limit)
 				level = level + 1
+				update_menu(level, oldMenuItem)
 				used_cannonballs = 0
 				inticks = 0
 				outticks = 0
@@ -519,6 +518,9 @@ function playdate.update()
 end
 
 function change_state(new_state)
+	if (state == nil) then
+		return
+	end
 	state = new_state
 	print("State changed to: " .. state)
 	gfx.sprite.update()
