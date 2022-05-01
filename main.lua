@@ -8,6 +8,13 @@ import "saver"
 -- GFX as a useful shorthand for the playdate's graphics.
 local gfx <const> = playdate.graphics
 
+-- Autosave settings
+local autosave = playdate.datastore.read("autosave")
+if autosave == nil then
+	autosave = true
+	saveauto(autosave)
+end
+
 -- Define fonts that will be used.
 local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
 
@@ -381,10 +388,10 @@ local level = 1
 local menu = playdate.getSystemMenu()
 
 local menuItem, error = menu:addMenuItem("Save now", function()
-	save()
+	save(level)
 end)
 
-local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("Auto Save", true, function(value)
+local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("Auto Save", autosave, function(value)
 	saveauto(value)
 end)
 
@@ -406,6 +413,14 @@ playdate.setMenuImage(menu_image_bg)
 function playdate.update()
 	if (state == STATE_TITLE) then
 		--TODO: add title screen
+		-- TODO: add menu
+		levelData = playdate.datastore.read("savegame")
+		if levelData == nil then
+			level = 1
+			save(level)
+		end
+		levelData = playdate.datastore.read("savegame")
+		level = levelData.current_level
 		load_level(level)
 		updateballs(used_cannonballs, level_cannonball_limit)
 		change_state(STATE_SET_ANGLE)
@@ -524,6 +539,9 @@ function playdate.update()
 			xpos = playdate.easingFunctions.inOutSine(outticks, 200, -600, 40)
 			transition_sprite:moveTo(xpos, 120)
 		else
+			if (autosave) then
+				save(level)
+			end
 			change_state(STATE_SET_ANGLE)
 			transition_sprite:remove()
 			return
