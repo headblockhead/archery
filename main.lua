@@ -173,7 +173,7 @@ local aim_image = gfx.image.new(400, 240)
 
 gfx.pushContext(aim_image)
 
-gfx.drawLine(0, 0, 400, 240)
+gfx.drawLine(0, 0, 0, 0)
 
 gfx.popContext()
 

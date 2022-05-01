@@ -19,6 +19,9 @@ function load_savegame()
 end
 
 function save(level)
+    if (level == nil) then
+        return
+    end
     local levelData = {
         ["current_level"] = level
     }
