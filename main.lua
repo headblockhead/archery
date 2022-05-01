@@ -4,17 +4,14 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/animation"
 import "CoreLibs/easing"
-import "saver"
+import "save_load"
+
 
 -- GFX as a useful shorthand for the playdate's graphics.
 local gfx <const> = playdate.graphics
 
--- Autosave settings
-local autosave = playdate.datastore.read("autosave")
-if autosave == nil then
-	autosave = true
-	saveauto(autosave)
-end
+--Load the autosave status
+local autosave = load_autosave()
 
 -- Define fonts that will be used.
 local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
@@ -98,9 +95,9 @@ local level5 = {
 	walls = { wall_enemy_5_2 },
 	cannonballs = 5,
 }
-
 levels = { level1, level2, level3, level4, level5 }
-
+-- levels = import "levels"
+printTable(levels)
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
@@ -144,6 +141,7 @@ function debug_load_level(lvl)
 	current_level = levels[lvl]
 	for _, enemy in ipairs(current_level.enemies) do
 		enemy:add()
+		printTable(enemy)
 	end
 	for _, wall in ipairs(current_level.walls) do
 		wall:add()
@@ -340,10 +338,12 @@ function load_level(lvl)
 		playdate.graphics.sprite.removeSprites(prev_level.enemies)
 		playdate.graphics.sprite.removeSprites(prev_level.walls)
 	end
+	printTable(levels[lvl])
 	-- Load the next level
 	current_level = levels[lvl]
 	for _, enemy in ipairs(current_level.enemies) do
 		enemy:add()
+		printTable(enemy)
 	end
 	for _, wall in ipairs(current_level.walls) do
 		wall:add()
@@ -414,13 +414,7 @@ function playdate.update()
 	if (state == STATE_TITLE) then
 		--TODO: add title screen
 		-- TODO: add menu
-		levelData = playdate.datastore.read("savegame")
-		if levelData == nil then
-			level = 1
-			save(level)
-		end
-		levelData = playdate.datastore.read("savegame")
-		level = levelData.current_level
+		level = load_savegame()
 		load_level(level)
 		updateballs(used_cannonballs, level_cannonball_limit)
 		change_state(STATE_SET_ANGLE)
