@@ -5,13 +5,15 @@ import "CoreLibs/timer"
 import "CoreLibs/animation"
 import "CoreLibs/easing"
 import "save_load"
-
+import "menu"
 
 -- GFX as a useful shorthand for the playdate's graphics.
 local gfx <const> = playdate.graphics
 
 --Load the autosave status
 local autosave = load_autosave()
+
+setup_menu(autosave)
 
 -- Define fonts that will be used.
 local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
@@ -96,8 +98,6 @@ local level5 = {
 	cannonballs = 5,
 }
 levels = { level1, level2, level3, level4, level5 }
--- levels = import "levels"
-printTable(levels)
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
@@ -108,7 +108,6 @@ clickSFX = playdate.sound.sampleplayer.new("SFX/tick")
 
 --Setup the crank
 playdate.setCrankSoundsDisabled(true)
-
 
 -- Debug for loading long-digit levels
 local buffer = 0
@@ -141,7 +140,6 @@ function debug_load_level(lvl)
 	current_level = levels[lvl]
 	for _, enemy in ipairs(current_level.enemies) do
 		enemy:add()
-		printTable(enemy)
 	end
 	for _, wall in ipairs(current_level.walls) do
 		wall:add()
@@ -338,12 +336,10 @@ function load_level(lvl)
 		playdate.graphics.sprite.removeSprites(prev_level.enemies)
 		playdate.graphics.sprite.removeSprites(prev_level.walls)
 	end
-	printTable(levels[lvl])
 	-- Load the next level
 	current_level = levels[lvl]
 	for _, enemy in ipairs(current_level.enemies) do
 		enemy:add()
-		printTable(enemy)
 	end
 	for _, wall in ipairs(current_level.walls) do
 		wall:add()
@@ -385,29 +381,7 @@ local projectile_path = {}
 -- Level.
 local level = 1
 
---Add settings to menu
-local menu = playdate.getSystemMenu()
 
-local menuItem, error = menu:addMenuItem("Save now", function()
-	save(level)
-end)
-
-local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("Auto Save", autosave, function(value)
-	saveauto(value)
-end)
-
-local menuItem2, error = menu:addMenuItem("Title", function()
-	save()
-	used_cannonballs = 0
-	inticks = 0
-	outticks = 0
-	defeated_enemies = 0
-	change_state(STATE_TITLE)
-end)
-
--- Add image to menu side
-menu_image_bg = gfx.image.new("images/menu_bg")
-playdate.setMenuImage(menu_image_bg)
 
 -- Run on every frame
 function playdate.update()

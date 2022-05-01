@@ -19,7 +19,6 @@ function load_savegame()
 end
 
 function save(level)
-    print("Saving...", level)
     local levelData = {
         ["current_level"] = level
     }
@@ -27,6 +26,5 @@ function save(level)
 end
 
 function saveauto(value)
-    print("Autosave: ", value)
     playdate.datastore.write(value, "autosave")
 end
