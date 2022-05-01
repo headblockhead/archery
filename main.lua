@@ -5,7 +5,7 @@ import "CoreLibs/timer"
 import "CoreLibs/animation"
 import "CoreLibs/easing"
 import "save_load"
-import "menu"
+import "setup_menu"
 
 -- GFX as a useful shorthand for the playdate's graphics.
 local gfx <const> = playdate.graphics
