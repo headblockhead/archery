@@ -8,7 +8,7 @@ import "save_load"
 import "setup_menu"
 
 -- GFX as a useful shorthand for the playdate's graphics.
-local gfx <const> = playdate.graphics
+local gfx<const> = playdate.graphics
 
 --Load the autosave status
 local autosave = load_autosave()
@@ -66,7 +66,7 @@ local level3 = {
 
 -- LEVEL 4
 local TNT_enemy_4_1 = gfx.sprite.new(Box_image)
-TNT_enemy_4_1:moveTo(280, 208)
+TNT_enemy_4_1:moveTo(300, 208)
 TNT_enemy_4_1:setCollideRect(0, 0, TNT_enemy_4_1:getSize())
 TNT_enemy_4_1:setTag(1)
 
@@ -83,7 +83,7 @@ local level4 = {
 
 -- LEVEL 5
 local TNT_enemy_5_1 = gfx.sprite.new(TNT_image)
-TNT_enemy_5_1:moveTo(280, 208)
+TNT_enemy_5_1:moveTo(380, 208)
 TNT_enemy_5_1:setCollideRect(0, 0, TNT_enemy_5_1:getSize())
 TNT_enemy_5_1:setTag(1)
 
@@ -258,10 +258,10 @@ assert(background_image)
 
 gfx.sprite.setBackgroundDrawingCallback(
 	function(x, y, width, height)
-	gfx.setClipRect(x, y, width, height)
-	background_image:draw(0, 0)
-	gfx.clearClipRect()
-end
+		gfx.setClipRect(x, y, width, height)
+		background_image:draw(0, 0)
+		gfx.clearClipRect()
+	end
 )
 
 local MAX_VELOCITY = 8.0 -- The fastest the ball can be set to go.
@@ -391,6 +391,9 @@ function playdate.update()
 		--TODO: add title screen
 		-- TODO: add menu
 		level = load_savegame()
+		if (level > #levels) then
+			level = level - 1
+		end
 		load_level(level)
 		updateballs(used_cannonballs, level_cannonball_limit)
 		change_state(STATE_SET_ANGLE)
@@ -500,10 +503,10 @@ function playdate.update()
 			transition_sprite:moveTo(xpos, 120)
 		elseif (inticks == 40) then
 			-- Load the level
+			load_level(level)
 			if (autosave) then
 				save(level)
 			end
-			load_level(level)
 			updateballs(used_cannonballs, level_cannonball_limit)
 			sprite_arrow:setRotation(90)
 			inticks = inticks + 1
