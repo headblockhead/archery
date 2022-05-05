@@ -1,36 +1,30 @@
-function setup_menu(autosave)
+import 'save_load'
+
+function setup_menu(autosave, level, menustate)
     --Add settings to menu
     local menu = playdate.getSystemMenu()
-
+    menu:removeAllMenuItems()
+    if (not (menustate == "main")) then
+        local menuItem2, error = menu:addMenuItem("to title", function()
+            --TODO: conformation dialog for save
+            used_cannonballs = 0
+            inticks = 0
+            outticks = 0
+            defeated_enemies = 0
+            change_state("title")
+            change_menu("enter")
+        end)
+    end
     local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("Auto Save", autosave, function(value)
         saveauto(value)
     end)
-
-    local menuItem2, error = menu:addMenuItem("to title", function()
-        --TODO: conformation dialog for save
-        used_cannonballs = 0
-        inticks = 0
-        outticks = 0
-        defeated_enemies = 0
-        change_state("title")
-    end)
-
-    local menuItem, error = menu:addMenuItem("Save", function()
-        save(1)
-    end)
-
+    if (not ((level == nil) or (menustate == "main"))) then
+        local menuItem, error = menu:addMenuItem("save", function()
+            --TODO: conformation dialog for save
+            save(level)
+        end)
+    end
     -- Add image to menu side
     menu_image_bg = playdate.graphics.image.new("images/menu_bg")
     playdate.setMenuImage(menu_image_bg)
-
-    return menuItem
-end
-
-function update_menu(level, oldmenuitem)
-    --Add settings to menu
-    local menu = playdate.getSystemMenu()
-    menu:removeMenuItem(oldmenuitem)
-    local menuItem, error = menu:addMenuItem("Save", function()
-        save(level)
-    end)
 end

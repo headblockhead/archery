@@ -19,7 +19,6 @@ function load_savegame()
 end
 
 function save(level)
-    print(level)
     if (level == nil) then
         return
     end

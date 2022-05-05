@@ -8,12 +8,12 @@ import "save_load"
 import "setup_menu"
 
 -- GFX as a useful shorthand for the playdate's graphics.
-local gfx<const> = playdate.graphics
+local gfx <const> = playdate.graphics
 
 --Load the autosave status
 local autosave = load_autosave()
 
-local oldMenuItem = setup_menu(autosave)
+setup_menu(autosave, nil, nil)
 
 -- Define fonts that will be used.
 local ubuntu_mono = gfx.font.new("fonts/ubuntuMONOreg")
@@ -123,7 +123,7 @@ function playdate.keyPressed(key)
 		inticks = 0
 		outticks = 0
 		defeated_enemies = 0
-		update_menu(level, oldMenuItem)
+		autosave = load_autosave()
 		if (autosave) then
 			save(level)
 		end
@@ -258,11 +258,17 @@ assert(background_image)
 
 gfx.sprite.setBackgroundDrawingCallback(
 	function(x, y, width, height)
-		gfx.setClipRect(x, y, width, height)
-		background_image:draw(0, 0)
-		gfx.clearClipRect()
-	end
+	gfx.setClipRect(x, y, width, height)
+	background_image:draw(0, 0)
+	gfx.clearClipRect()
+end
 )
+
+local title_bg = gfx.image.new("images/title")
+local title_bg_sprite = gfx.sprite.new(title_bg)
+title_bg_sprite:setZIndex(10)
+title_bg_sprite:moveTo(200, 120)
+-- Don't add the title yet
 
 local MAX_VELOCITY = 8.0 -- The fastest the ball can be set to go.
 
@@ -385,19 +391,53 @@ local projectile_path = {}
 -- Level.
 -- local level = 1
 
+local MENU_STATE_ENTER = "enter"
+local MENU_STATE_MAIN = "main"
+local MENU_STATE_EXIT = "exit"
+local menu_state = MENU_STATE_ENTER
+
 -- Run on every frame
 function playdate.update()
 	if (state == STATE_TITLE) then
 		--TODO: add title screen
-		-- TODO: add menu
-		level = load_savegame()
-		if (level > #levels) then
-			level = level - 1
+		if (menu_state == MENU_STATE_ENTER) then
+			title_bg_sprite:add()
+			change_menu(MENU_STATE_MAIN)
 		end
-		load_level(level)
-		updateballs(used_cannonballs, level_cannonball_limit)
-		change_state(STATE_SET_ANGLE)
-		return
+		if (menu_state == MENU_STATE_MAIN) then
+			if playdate.buttonIsPressed(playdate.kButtonUp) and playdate.buttonIsPressed(playdate.kButtonLeft) then
+				change_menu(MENU_STATE_EXIT)
+				return
+			end
+			if playdate.buttonIsPressed(playdate.kButtonUp) and playdate.buttonIsPressed(playdate.kButtonRight) then
+				print("LEVELS")
+				-- TODO: level select
+				return
+			end
+			if playdate.buttonIsPressed(playdate.kButtonDown) and playdate.buttonIsPressed(playdate.kButtonLeft) then
+				print("NEW GAME")
+				-- TODO: level select
+				return
+			end
+			if playdate.buttonIsPressed(playdate.kButtonDown) and playdate.buttonIsPressed(playdate.kButtonRight) then
+				print("About")
+				-- TODO: level select
+				return
+			end
+		elseif (menu_state == MENU_STATE_EXIT) then
+			title_bg_sprite:remove()
+
+			level = load_savegame()
+			if (level > #levels) then
+				level = level - 1
+			end
+			load_level(level)
+			autosave = load_autosave()
+			setup_menu(autosave, level, menu_state)
+			updateballs(used_cannonballs, level_cannonball_limit)
+			change_state(STATE_SET_ANGLE)
+			return
+		end
 	end
 	if (state == STATE_GAME_OVER) then
 		--TODO: add game over screen
@@ -473,7 +513,6 @@ function playdate.update()
 			if (used_cannonballs <= level_cannonball_limit and defeated_enemies >= level_enimies_count) then
 				-- If all of the enimies have been defeated. (and within the cannonball limit)
 				level = level + 1
-				update_menu(level, oldMenuItem)
 				used_cannonballs = 0
 				inticks = 0
 				outticks = 0
@@ -504,9 +543,11 @@ function playdate.update()
 		elseif (inticks == 40) then
 			-- Load the level
 			load_level(level)
+			autosave = load_autosave()
 			if (autosave) then
 				save(level)
 			end
+			setup_menu(autosave, level, menu_state)
 			updateballs(used_cannonballs, level_cannonball_limit)
 			sprite_arrow:setRotation(90)
 			inticks = inticks + 1
@@ -524,8 +565,19 @@ function playdate.update()
 	playdate.timer.updateTimers()
 end
 
+function change_menu(new_menu)
+	if (new_menu == nil) then
+		return
+	end
+	menu_state = new_menu
+	print("Menu state changed to: " .. menu_state)
+	setup_menu(autosave, level, menu_state)
+	gfx.sprite.update()
+	playdate.timer.updateTimers()
+end
+
 function change_state(new_state)
-	if (state == nil) then
+	if (new_state == nil) then
 		return
 	end
 	state = new_state
