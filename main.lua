@@ -4,6 +4,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/animation"
 import "CoreLibs/easing"
+import "CoreLibs/ui"
 import "save_load"
 import "setup_menu"
 
@@ -273,7 +274,7 @@ title_bg_sprite:moveTo(200, 120)
 local dpad_normal_tex = gfx.image.new("images/d-pad/d-pad_normal.png")
 local dpad = gfx.sprite.new(dpad_normal_tex)
 dpad:setZIndex(11)
-dpad:moveTo(130, 171)
+dpad:moveTo(116, 182)
 -- Don't add the dpad yet either
 
 local MAX_VELOCITY = 8.0 -- The fastest the ball can be set to go.
