@@ -270,6 +270,12 @@ title_bg_sprite:setZIndex(10)
 title_bg_sprite:moveTo(200, 120)
 -- Don't add the title yet
 
+local dpad_normal_tex = gfx.image.new("images/d-pad/d-pad_normal.png")
+local dpad = gfx.sprite.new(dpad_normal_tex)
+dpad:setZIndex(11)
+dpad:moveTo(130, 171)
+-- Don't add the dpad yet either
+
 local MAX_VELOCITY = 8.0 -- The fastest the ball can be set to go.
 
 -- Default is impossible value to ensure the aim + velocity is updated on first run.
@@ -402,9 +408,11 @@ function playdate.update()
 		--TODO: add title screen
 		if (menu_state == MENU_STATE_ENTER) then
 			title_bg_sprite:add()
+			dpad:add()
 			change_menu(MENU_STATE_MAIN)
 		end
 		if (menu_state == MENU_STATE_MAIN) then
+			set_dpad(playdate.buttonIsPressed(playdate.kButtonUp), playdate.buttonIsPressed(playdate.kButtonDown), playdate.buttonIsPressed(playdate.kButtonLeft), playdate.buttonIsPressed(playdate.kButtonRight), dpad)
 			if playdate.buttonIsPressed(playdate.kButtonUp) and playdate.buttonIsPressed(playdate.kButtonLeft) then
 				change_menu(MENU_STATE_EXIT)
 				return
@@ -426,7 +434,11 @@ function playdate.update()
 			end
 		elseif (menu_state == MENU_STATE_EXIT) then
 			title_bg_sprite:remove()
-
+			dpad:remove()
+			sprite_arrow:setRotation(90)
+			sprite_arrow:moveTo(10, 230)
+			ticks = 0
+			velocity = 0.0
 			level = load_savegame()
 			if (level > #levels) then
 				level = level - 1
@@ -584,4 +596,52 @@ function change_state(new_state)
 	print("State changed to: " .. state)
 	gfx.sprite.update()
 	playdate.timer.updateTimers()
+end
+
+function set_dpad(up, down, left, right, dpad)
+	if (up) then
+		local dpad_up_image = gfx.image.new("images/d-pad/d-pad_up.png")
+		dpad:setImage(dpad_up_image)
+		return
+	end
+	if (down) then
+		local dpad_down_image = gfx.image.new("images/d-pad/d-pad_down.png")
+		dpad:setImage(dpad_down_image)
+		return
+	end
+	if (left) then
+		local dpad_left_image = gfx.image.new("images/d-pad/d-pad_left.png")
+		dpad:setImage(dpad_left_image)
+		return
+	end
+	if (right) then
+		local dpad_right_image = gfx.image.new("images/d-pad/d-pad_right.png")
+		dpad:setImage(dpad_right_image)
+		return
+	end
+	if (up and left) then
+		local dpad_up_left_image = gfx.image.new("images/d-pad/d-pad_up_left.png")
+		dpad:setImage(dpad_up_left_image)
+		return
+	end
+	if (up and right) then
+		local dpad_up_right_image = gfx.image.new("images/d-pad/d-pad_up_right.png")
+		dpad:setImage(dpad_up_right_image)
+		return
+	end
+	if (down and left) then
+		local dpad_down_left_image = gfx.image.new("images/d-pad/d-pad_down_left.png")
+		dpad:setImage(dpad_down_left_image)
+		return
+	end
+	if (down and right) then
+		local dpad_down_right_image = gfx.image.new("images/d-pad/d-pad_down_right.png")
+		dpad:setImage(dpad_down_right_image)
+		return
+	end
+	if ((not up) and (not down) and (not left) and (not right)) then
+		local dpad_image = gfx.image.new("images/d-pad/d-pad_normal.png")
+		dpad:setImage(dpad_image)
+		return
+	end
 end
