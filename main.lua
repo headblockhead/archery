@@ -619,26 +619,6 @@ function set_dpad(up, down, left, right, dpad)
 		dpad:setImage(dpad_right_image)
 		return
 	end
-	if (up and left) then
-		local dpad_up_left_image = gfx.image.new("images/d-pad/d-pad_up_left.png")
-		dpad:setImage(dpad_up_left_image)
-		return
-	end
-	if (up and right) then
-		local dpad_up_right_image = gfx.image.new("images/d-pad/d-pad_up_right.png")
-		dpad:setImage(dpad_up_right_image)
-		return
-	end
-	if (down and left) then
-		local dpad_down_left_image = gfx.image.new("images/d-pad/d-pad_down_left.png")
-		dpad:setImage(dpad_down_left_image)
-		return
-	end
-	if (down and right) then
-		local dpad_down_right_image = gfx.image.new("images/d-pad/d-pad_down_right.png")
-		dpad:setImage(dpad_down_right_image)
-		return
-	end
 	if ((not up) and (not down) and (not left) and (not right)) then
 		local dpad_image = gfx.image.new("images/d-pad/d-pad_normal.png")
 		dpad:setImage(dpad_image)
