@@ -380,6 +380,7 @@ local outticks = 0
 
 -- State.
 local STATE_LEVEL_TRANSITION = "transition"
+local STATE_LEVEL_MENU_TRANSITION = "transition_menu"
 local STATE_TITLE = "title"
 local STATE_GAME_OVER = "game_over"
 local STATE_SET_ANGLE = "set_angle"
@@ -405,8 +406,11 @@ local menu_state = MENU_STATE_ENTER
 
 -- Run on every frame
 function playdate.update()
+	gfx.sprite.update()
+	playdate.timer.updateTimers()
 	if (state == STATE_TITLE) then
 		--TODO: add title screen
+		transition_sprite:remove()
 		if (menu_state == MENU_STATE_ENTER) then
 			title_bg_sprite:add()
 			dpad:add()
@@ -434,8 +438,6 @@ function playdate.update()
 				return
 			end
 		elseif (menu_state == MENU_STATE_EXIT) then
-			title_bg_sprite:remove()
-			dpad:remove()
 			sprite_arrow:setRotation(90)
 			sprite_arrow:moveTo(10, 230)
 			ticks = 0
@@ -448,7 +450,14 @@ function playdate.update()
 			autosave = load_autosave()
 			setup_menu(autosave, level, menu_state)
 			updateballs(used_cannonballs, level_cannonball_limit)
-			change_state(STATE_SET_ANGLE)
+			used_cannonballs = 0
+			inticks = 0
+			outticks = 0
+			defeated_enemies = 0
+			levelcompleteSFX:play()
+			transition_sprite:moveTo(800, 120)
+			transition_sprite:add()
+			change_state(STATE_LEVEL_MENU_TRANSITION)
 			return
 		end
 	end
@@ -480,10 +489,14 @@ function playdate.update()
 	end
 
 	if (state == STATE_FIRING) then
+		gfx.sprite.update()
+		playdate.timer.updateTimers()
 		for _, overlapping_sprite in pairs(sprite_arrow:overlappingSprites()) do
 			if (overlapping_sprite:getTag() == 1) then
 				explosionSFX:play()
 				overlapping_sprite:remove()
+				gfx.sprite.update()
+				playdate.timer.updateTimers()
 				defeated_enemies = defeated_enemies + 1
 			elseif (overlapping_sprite:getTag() == 2) then
 				sprite_arrow.y = 280
@@ -549,6 +562,8 @@ function playdate.update()
 		end
 	end
 	if (state == STATE_LEVEL_TRANSITION) then
+		gfx.sprite.update()
+		playdate.timer.updateTimers()
 		if (inticks < 40) then
 			inticks = inticks + 1
 			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
@@ -574,8 +589,30 @@ function playdate.update()
 			return
 		end
 	end
-	gfx.sprite.update()
-	playdate.timer.updateTimers()
+	if (state == STATE_LEVEL_MENU_TRANSITION) then
+		gfx.sprite.update()
+		playdate.timer.updateTimers()
+		if (inticks < 40) then
+			inticks = inticks + 1
+			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
+			transition_sprite:moveTo(xpos, 120)
+		elseif (inticks == 40) then
+			setup_menu(autosave, level, menu_state)
+			updateballs(used_cannonballs, level_cannonball_limit)
+			sprite_arrow:setRotation(90)
+			inticks = inticks + 1
+			dpad:remove()
+			title_bg_sprite:remove()
+		elseif (outticks < 40) then
+			outticks = outticks + 1
+			xpos = playdate.easingFunctions.inOutSine(outticks, 200, -600, 40)
+			transition_sprite:moveTo(xpos, 120)
+		else
+			change_state(STATE_SET_ANGLE)
+			transition_sprite:remove()
+			return
+		end
+	end
 end
 
 function change_menu(new_menu)
