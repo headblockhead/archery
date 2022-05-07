@@ -3,6 +3,6 @@ author=Headblockhead
 description=Aim and FIRE!
 bundleID=com.headblockhead.archery
 version=0.1
-build=417
+build=427
 imagePath=cards
 launchSoundPath=SFX/launchgame
