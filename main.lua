@@ -406,8 +406,6 @@ local menu_state = MENU_STATE_ENTER
 
 -- Run on every frame
 function playdate.update()
-	gfx.sprite.update()
-	playdate.timer.updateTimers()
 	if (state == STATE_TITLE) then
 		--TODO: add title screen
 		transition_sprite:remove()
@@ -489,14 +487,10 @@ function playdate.update()
 	end
 
 	if (state == STATE_FIRING) then
-		gfx.sprite.update()
-		playdate.timer.updateTimers()
 		for _, overlapping_sprite in pairs(sprite_arrow:overlappingSprites()) do
 			if (overlapping_sprite:getTag() == 1) then
 				explosionSFX:play()
 				overlapping_sprite:remove()
-				gfx.sprite.update()
-				playdate.timer.updateTimers()
 				defeated_enemies = defeated_enemies + 1
 			elseif (overlapping_sprite:getTag() == 2) then
 				sprite_arrow.y = 280
@@ -559,11 +553,10 @@ function playdate.update()
 			ballFallSFX:play()
 			change_state(STATE_SET_ANGLE)
 			updateballs(used_cannonballs, level_cannonball_limit)
+			return
 		end
 	end
 	if (state == STATE_LEVEL_TRANSITION) then
-		gfx.sprite.update()
-		playdate.timer.updateTimers()
 		if (inticks < 40) then
 			inticks = inticks + 1
 			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
@@ -590,8 +583,6 @@ function playdate.update()
 		end
 	end
 	if (state == STATE_LEVEL_MENU_TRANSITION) then
-		gfx.sprite.update()
-		playdate.timer.updateTimers()
 		if (inticks < 40) then
 			inticks = inticks + 1
 			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
@@ -613,6 +604,8 @@ function playdate.update()
 			return
 		end
 	end
+	gfx.sprite.update()
+	playdate.timer.updateTimers()
 end
 
 function change_menu(new_menu)
