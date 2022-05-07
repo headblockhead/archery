@@ -436,22 +436,16 @@ function playdate.update()
 				return
 			end
 		elseif (menu_state == MENU_STATE_EXIT) then
-			sprite_arrow:setRotation(90)
-			sprite_arrow:moveTo(10, 230)
+			level = load_savegame()
 			ticks = 0
 			velocity = 0.0
-			level = load_savegame()
-			if (level > #levels) then
-				level = level - 1
-			end
-			load_level(level)
-			autosave = load_autosave()
-			setup_menu(autosave, level, menu_state)
-			updateballs(used_cannonballs, level_cannonball_limit)
 			used_cannonballs = 0
 			inticks = 0
 			outticks = 0
 			defeated_enemies = 0
+			sprite_arrow:setRotation(90)
+			sprite_arrow:moveTo(10, 230)
+
 			levelcompleteSFX:play()
 			transition_sprite:moveTo(800, 120)
 			transition_sprite:add()
@@ -588,12 +582,18 @@ function playdate.update()
 			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
 			transition_sprite:moveTo(xpos, 120)
 		elseif (inticks == 40) then
+			-- Load the level
+			load_level(level)
+			autosave = load_autosave()
+			if (autosave) then
+				save(level)
+			end
+			dpad:remove()
+			title_bg_sprite:remove()
 			setup_menu(autosave, level, menu_state)
 			updateballs(used_cannonballs, level_cannonball_limit)
 			sprite_arrow:setRotation(90)
 			inticks = inticks + 1
-			dpad:remove()
-			title_bg_sprite:remove()
 		elseif (outticks < 40) then
 			outticks = outticks + 1
 			xpos = playdate.easingFunctions.inOutSine(outticks, 200, -600, 40)
