@@ -271,6 +271,12 @@ title_bg_sprite:setZIndex(10)
 title_bg_sprite:moveTo(200, 120)
 -- Don't add the title yet
 
+local qrcode_img = gfx.image.new("images/website")
+local qrcode = gfx.sprite.new(qrcode_img)
+qrcode:setZIndex(15)
+qrcode:moveTo(200, 120)
+-- Don't add the QR code yet
+
 local dpad_normal_tex = gfx.image.new("images/d-pad/d-pad_normal.png")
 local dpad = gfx.sprite.new(dpad_normal_tex)
 dpad:setZIndex(11)
@@ -404,10 +410,11 @@ local MENU_STATE_MAIN = "main"
 local MENU_STATE_EXIT = "exit"
 local menu_state = MENU_STATE_ENTER
 
+local qr_code_added = false
+
 -- Run on every frame
 function playdate.update()
 	if (state == STATE_TITLE) then
-		--TODO: add title screen
 		transition_sprite:remove()
 		if (menu_state == MENU_STATE_ENTER) then
 			title_bg_sprite:add()
@@ -424,16 +431,21 @@ function playdate.update()
 				print("NEW GAME")
 				-- TODO: confirm wipe
 				-- TODO: save as level 1
-				return
 			end
 			if playdate.buttonIsPressed(playdate.kButtonLeft) then
 				print("Guide")
 				--TODO: add guide
-				return
 			end
 			if playdate.buttonIsPressed(playdate.kButtonRight) then
-				print("QR code here")
-				--TODO: add qrcode
+				if (qr_code_added == false) then
+					qrcode:add()
+					qr_code_added = true
+				end
+			else
+				if (qr_code_added == true) then
+					qrcode:remove()
+					qr_code_added = false
+				end
 			end
 		elseif (menu_state == MENU_STATE_EXIT) then
 			level = load_savegame()
