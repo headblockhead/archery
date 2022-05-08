@@ -106,6 +106,8 @@ ball_launchSFX = playdate.sound.sampleplayer.new("SFX/ball_launch")
 levelcompleteSFX = playdate.sound.sampleplayer.new("SFX/lvl_complete")
 ballFallSFX = playdate.sound.sampleplayer.new("SFX/ball_fall")
 clickSFX = playdate.sound.sampleplayer.new("SFX/tick")
+delSFX = playdate.sound.sampleplayer.new("SFX/del_sav")
+del_waitSFX = playdate.sound.sampleplayer.new("SFX/del_sav_wait")
 
 --Setup the crank
 playdate.setCrankSoundsDisabled(true)
@@ -277,6 +279,12 @@ qrcode:setZIndex(15)
 qrcode:moveTo(200, 120)
 -- Don't add the QR code yet
 
+local warn_img = gfx.image.new("images/warning")
+local warn = gfx.sprite.new(warn_img)
+warn:setZIndex(16)
+warn:moveTo(200, 120)
+-- Don't add the warning yet
+
 local dpad_normal_tex = gfx.image.new("images/d-pad/d-pad_normal.png")
 local dpad = gfx.sprite.new(dpad_normal_tex)
 dpad:setZIndex(11)
@@ -407,8 +415,11 @@ local projectile_path = {}
 
 local MENU_STATE_ENTER = "enter"
 local MENU_STATE_MAIN = "main"
+local MENU_STATE_WIPE_WAIT = "wipe_wait"
 local MENU_STATE_EXIT = "exit"
 local menu_state = MENU_STATE_ENTER
+
+local wipe_held_frames = 0
 
 local qr_code_added = false
 
@@ -429,8 +440,10 @@ function playdate.update()
 			end
 			if playdate.buttonIsPressed(playdate.kButtonDown) then
 				print("NEW GAME")
-				-- TODO: confirm wipe
-				-- TODO: save as level 1
+				wipe_held_frames = 0
+				warn:add()
+				change_menu(MENU_STATE_WIPE_WAIT)
+				return
 			end
 			if playdate.buttonIsPressed(playdate.kButtonLeft) then
 				print("Guide")
@@ -463,6 +476,26 @@ function playdate.update()
 			transition_sprite:add()
 			change_state(STATE_LEVEL_MENU_TRANSITION)
 			return
+		elseif menu_state == MENU_STATE_WIPE_WAIT then
+			if playdate.buttonIsPressed(playdate.kButtonDown) then
+				wipe_held_frames = wipe_held_frames + 1
+				-- Beep every second
+				if ((wipe_held_frames % 30) == 0) then
+					del_waitSFX:play()
+				end
+				-- framerate is 30FPS so 150 frames = 5 seconds
+				if (wipe_held_frames > 150) then
+					save(1)
+					delSFX:play()
+					warn:remove()
+					change_menu(MENU_STATE_MAIN)
+				end
+			else
+				wipe_held_frames = 0
+				warn:remove()
+				change_menu(MENU_STATE_MAIN)
+				return
+			end
 		end
 	end
 	if (state == STATE_GAME_OVER) then
