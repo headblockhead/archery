@@ -416,24 +416,24 @@ function playdate.update()
 		end
 		if (menu_state == MENU_STATE_MAIN) then
 			set_dpad(playdate.buttonIsPressed(playdate.kButtonUp), playdate.buttonIsPressed(playdate.kButtonDown), playdate.buttonIsPressed(playdate.kButtonLeft), playdate.buttonIsPressed(playdate.kButtonRight), dpad)
-			if playdate.buttonIsPressed(playdate.kButtonUp) and playdate.buttonIsPressed(playdate.kButtonLeft) then
+			if playdate.buttonIsPressed(playdate.kButtonUp) then
 				change_menu(MENU_STATE_EXIT)
 				return
 			end
-			if playdate.buttonIsPressed(playdate.kButtonUp) and playdate.buttonIsPressed(playdate.kButtonRight) then
-				print("LEVELS")
-				-- TODO: level select
-				return
-			end
-			if playdate.buttonIsPressed(playdate.kButtonDown) and playdate.buttonIsPressed(playdate.kButtonLeft) then
+			if playdate.buttonIsPressed(playdate.kButtonDown) then
 				print("NEW GAME")
-				-- TODO: level select
+				-- TODO: confirm wipe
+				-- TODO: save as level 1
 				return
 			end
-			if playdate.buttonIsPressed(playdate.kButtonDown) and playdate.buttonIsPressed(playdate.kButtonRight) then
-				print("About")
-				-- TODO: level select
+			if playdate.buttonIsPressed(playdate.kButtonLeft) then
+				print("Guide")
+				--TODO: add guide
 				return
+			end
+			if playdate.buttonIsPressed(playdate.kButtonRight) then
+				print("QR code here")
+				--TODO: add qrcode
 			end
 		elseif (menu_state == MENU_STATE_EXIT) then
 			level = load_savegame()
