@@ -723,7 +723,7 @@ function change_menu(new_menu)
 		return
 	end
 	menu_state = new_menu
-	print("Menu state changed to: " .. menu_state)
+	-- print("Menu state changed to: " .. menu_state)
 	setup_menu(autosave, level, menu_state)
 	gfx.sprite.update()
 	playdate.timer.updateTimers()
@@ -734,7 +734,7 @@ function change_state(new_state)
 		return
 	end
 	state = new_state
-	print("State changed to: " .. state)
+	-- print("State changed to: " .. state)
 	gfx.sprite.update()
 	playdate.timer.updateTimers()
 end
