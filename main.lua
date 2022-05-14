@@ -98,7 +98,52 @@ local level5 = {
 	walls = { wall_enemy_5_2 },
 	cannonballs = 5,
 }
-levels = { level1, level2, level3, level4, level5 }
+
+-- LEVEL 6
+local TNT_enemy_6_1 = gfx.sprite.new(TNT_image)
+TNT_enemy_6_1:moveTo(330, 115)
+TNT_enemy_6_1:setCollideRect(0, 0, TNT_enemy_6_1:getSize())
+TNT_enemy_6_1:setTag(1)
+
+local wall_enemy_6_2 = gfx.sprite.new(Wall_image)
+wall_enemy_6_2:moveTo(330, 200)
+wall_enemy_6_2:setCollideRect(0, 0, wall_enemy_6_2:getSize())
+wall_enemy_6_2:setTag(2)
+
+local wall_enemy_6_3 = gfx.sprite.new(Wall_image)
+wall_enemy_6_3:moveTo(330, 20)
+wall_enemy_6_3:setCollideRect(0, 0, wall_enemy_6_3:getSize())
+wall_enemy_6_3:setTag(2)
+
+local level6 = {
+	enemies = { TNT_enemy_6_1 },
+	walls = { wall_enemy_6_2, wall_enemy_6_3 },
+	cannonballs = 5,
+}
+
+-- LEVEL 7
+local TNT_enemy_7_1 = gfx.sprite.new(TNT_image)
+TNT_enemy_7_1:moveTo(300, 135)
+TNT_enemy_7_1:setCollideRect(0, 0, TNT_enemy_7_1:getSize())
+TNT_enemy_7_1:setTag(1)
+
+local wall_enemy_7_2 = gfx.sprite.new(Wall_image)
+wall_enemy_7_2:moveTo(300, 220)
+wall_enemy_7_2:setCollideRect(0, 0, wall_enemy_7_2:getSize())
+wall_enemy_7_2:setTag(2)
+
+local wall_enemy_7_3 = gfx.sprite.new(Wall_image)
+wall_enemy_7_3:moveTo(300, 40)
+wall_enemy_7_3:setCollideRect(0, 0, wall_enemy_7_3:getSize())
+wall_enemy_7_3:setTag(2)
+
+local level7 = {
+	enemies = { TNT_enemy_7_1 },
+	walls = { wall_enemy_7_2, wall_enemy_7_3 },
+	cannonballs = 5,
+}
+
+levels = { level1, level2, level3, level4, level5, level6, level7 }
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
@@ -569,7 +614,7 @@ function playdate.update()
 		sprite_arrow:setCollideRect(0, 0, sprite_arrow:getSize())
 
 		-- If the ball has gone below the screen.
-		if (sprite_arrow.y > 250) then
+		if ((sprite_arrow.y > 250) or (sprite_arrow.x > 420)) then
 			used_cannonballs = used_cannonballs + 1
 			sprite_arrow:setRotation(90)
 			sprite_arrow:moveTo(10, 230)
