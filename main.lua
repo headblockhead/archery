@@ -300,6 +300,15 @@ ball_text_sprite:moveTo(380, 8)
 ball_text_sprite:add()
 gfx.setImageDrawMode(gfx.kDrawModeCopy)
 
+local indicator_image = gfx.image.new("images/indicator/indicator_ready.png")
+local indicator_image_angle = gfx.image.new("images/indicator/indicator_aim.png")
+local indicator_image_velocity = gfx.image.new("images/indicator/indicator_pull.png")
+local indicator_image_fire = gfx.image.new("images/indicator/indicator_fire.png")
+local sprite_indicator = gfx.sprite.new(indicator_image)
+sprite_indicator:setZIndex(6)
+sprite_indicator:moveTo(368, 232)
+sprite_indicator:add()
+
 -- Draw the background
 local background_image = gfx.image.new("images/background")
 assert(background_image)
@@ -556,6 +565,7 @@ function playdate.update()
 	end
 	--TODO: add indicator for state ( angle or velocity )
 	if (state == STATE_SET_ANGLE) then
+		sprite_indicator:setImage(indicator_image_angle)
 		angle = playdate.getCrankPosition()
 		angle = angle / 4
 		updateaim(angle)
@@ -567,6 +577,7 @@ function playdate.update()
 	end
 
 	if (state == STATE_SET_VELOCITY) then
+		sprite_indicator:setImage(indicator_image_velocity)
 		velocity = playdate.getCrankPosition() / 45
 		updatevelocity(velocity)
 		updateaim(angle)
@@ -578,6 +589,7 @@ function playdate.update()
 	end
 
 	if (state == STATE_FIRING) then
+		sprite_indicator:setImage(indicator_image_fire)
 		for _, overlapping_sprite in pairs(sprite_arrow:overlappingSprites()) do
 			if (overlapping_sprite:getTag() == 1) then
 				explosionSFX:play()
@@ -687,6 +699,7 @@ function playdate.update()
 			end
 			dpad:remove()
 			title_bg_sprite:remove()
+			sprite_indicator:setImage(indicator_image)
 			setup_menu(autosave, level, menu_state)
 			updateballs(used_cannonballs, level_cannonball_limit)
 			sprite_arrow:setRotation(90)
