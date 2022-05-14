@@ -421,6 +421,8 @@ local menu_state = MENU_STATE_ENTER
 
 local wipe_held_frames = 0
 
+deleted = false
+
 local qr_code_added = false
 
 -- Run on every frame
@@ -439,11 +441,14 @@ function playdate.update()
 				return
 			end
 			if playdate.buttonIsPressed(playdate.kButtonDown) then
-				print("NEW GAME")
-				wipe_held_frames = 0
-				warn:add()
-				change_menu(MENU_STATE_WIPE_WAIT)
-				return
+				if (not deleted) then
+					wipe_held_frames = 0
+					warn:add()
+					change_menu(MENU_STATE_WIPE_WAIT)
+					return
+				end
+			else
+				deleted = false
 			end
 			if playdate.buttonIsPressed(playdate.kButtonLeft) then
 				print("Guide")
@@ -488,11 +493,13 @@ function playdate.update()
 					save(1)
 					delSFX:play()
 					warn:remove()
+					deleted = true
 					change_menu(MENU_STATE_MAIN)
 				end
 			else
 				wipe_held_frames = 0
 				warn:remove()
+				deleted = false
 				change_menu(MENU_STATE_MAIN)
 				return
 			end
