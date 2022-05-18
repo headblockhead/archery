@@ -561,9 +561,15 @@ function playdate.update()
 	end
 	if (state == STATE_GAME_OVER) then
 		--TODO: add game over screen
+		used_cannonballs = 0
+		inticks = 0
+		outticks = 0
+		defeated_enemies = 0
+		transition_sprite:moveTo(800, 120)
+		transition_sprite:add()
+		change_state(STATE_LEVEL_TRANSITION_FAIL)
 		return
 	end
-	--TODO: add indicator for state ( angle or velocity )
 	if (state == STATE_SET_ANGLE) then
 		sprite_indicator:setImage(indicator_image_angle)
 		angle = playdate.getCrankPosition()
@@ -666,6 +672,7 @@ function playdate.update()
 			transition_sprite:moveTo(xpos, 120)
 		elseif (inticks == 40) then
 			-- Load the level
+			sprite_indicator:setImage(indicator_image)
 			load_level(level)
 			autosave = load_autosave()
 			if (autosave) then
