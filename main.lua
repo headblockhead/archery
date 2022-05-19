@@ -315,10 +315,10 @@ assert(background_image)
 
 gfx.sprite.setBackgroundDrawingCallback(
 	function(x, y, width, height)
-	gfx.setClipRect(x, y, width, height)
-	background_image:draw(0, 0)
-	gfx.clearClipRect()
-end
+		gfx.setClipRect(x, y, width, height)
+		background_image:draw(0, 0)
+		gfx.clearClipRect()
+	end
 )
 
 local title_bg = gfx.image.new("images/title")
@@ -387,7 +387,7 @@ end
 
 local transition_image = gfx.image.new("images/transition")
 local transition_sprite = gfx.sprite.new(transition_image)
-transition_sprite:setZIndex(15)
+transition_sprite:setZIndex(50)
 transition_sprite:moveTo(800, 120) -- Offscreen
 
 -- Draw a line to show the angle that is being aimed at.
@@ -416,10 +416,10 @@ end
 
 function load_level(lvl)
 	-- Clear the playfield for the next level
-	if (lvl > 1) then
-		prev_level = levels[lvl - 1]
-		playdate.graphics.sprite.removeSprites(prev_level.enemies)
-		playdate.graphics.sprite.removeSprites(prev_level.walls)
+	prev_level = levels[lvl - 1]
+	for _, level in ipairs(levels) do
+		playdate.graphics.sprite.removeSprites(level.enemies)
+		playdate.graphics.sprite.removeSprites(level.walls)
 	end
 	-- Load the next level
 	current_level = levels[lvl]
@@ -448,6 +448,7 @@ local outticks = 0
 
 -- State.
 local STATE_LEVEL_TRANSITION = "transition"
+local STATE_LEVEL_TRANSITION_FAIL = "transition_fail"
 local STATE_LEVEL_MENU_TRANSITION = "transition_menu"
 local STATE_TITLE = "title"
 local STATE_GAME_OVER = "game_over"
@@ -718,6 +719,31 @@ function playdate.update()
 		else
 			change_state(STATE_SET_ANGLE)
 			transition_sprite:remove()
+			return
+		end
+	end
+	if (state == STATE_LEVEL_TRANSITION_FAIL) then
+		if (inticks < 40) then
+			inticks = inticks + 1
+			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
+			transition_sprite:moveTo(xpos, 120)
+		elseif (inticks == 40) then
+			-- Load the title
+			sprite_indicator:setImage(indicator_image)
+			menu_state = MENU_STATE_ENTER
+			setup_menu(autosave, level, menu_state)
+			updateballs(used_cannonballs, level_cannonball_limit)
+			sprite_arrow:setRotation(90)
+			inticks = inticks + 1
+			title_bg_sprite:add()
+			dpad:add()
+		elseif (outticks < 40) then
+			outticks = outticks + 1
+			xpos = playdate.easingFunctions.inOutSine(outticks, 200, -600, 40)
+			transition_sprite:moveTo(xpos, 120)
+		else
+			transition_sprite:remove()
+			change_state(STATE_TITLE)
 			return
 		end
 	end
