@@ -561,7 +561,6 @@ function playdate.update()
 		end
 	end
 	if (state == STATE_GAME_OVER) then
-		--TODO: add game over screen
 		used_cannonballs = 0
 		inticks = 0
 		outticks = 0
