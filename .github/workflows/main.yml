@@ -1,10 +1,7 @@
-# This is a basic workflow to help you get started with Actions
-
-name: New Version
+name: Build
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
 
@@ -15,29 +12,21 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      - name: Install Playdate SDK
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+      - name: Install the Playdate SDK
         id: playdate
         uses: pd-rs/get-playdate-sdk@0.1.2
         with:
-            # optional, can be omitted
             # possible values: version (1.10.0 or 1.9.3) or "latest"
             version: latest
-      - name: usage
+      - name: Build the Project
         run: |
-          echo "SDK root: $PLAYDATE_SDK_PATH"
-          echo "SDK root: ${{ steps.playdate.outputs.root }}"
-          echo "SDK version: ${{ steps.playdate.outputs.version }}"
-          pdc --version
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          pdc ./ ./build
-          ls
+          pdc -k ./ ./build
+      - name: Upload the build
+        uses: actions/upload-artifact@v3
+        with:
+          name: Completed Build
+          path: build
