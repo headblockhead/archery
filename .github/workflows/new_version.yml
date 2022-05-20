@@ -1,5 +1,7 @@
 name: New version
 
+permissions: write-all
+
 # Controls when the workflow will run
 on:
   push:
@@ -26,11 +28,10 @@ jobs:
       - name: Build the Project
         run: |
           pdc -k ./ ./build
-      - name: Upload the build
-        uses: actions/upload-artifact@v3
+      - name: Zip build
+        uses: montudor/action-zip@v1
         with:
-          name: Completed Build
-          path: ./build.pdx
+          args: zip -qq -r Build.zip build.pdx
       - name: Read version file
         id: versionfile
         uses: juliangruber/read-file-action@v1
@@ -41,6 +42,11 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: ./buildnum.txt
+      - name: Read prerelase
+        id: pre
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./prerelease.txt
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%d-%m-%Y')"
@@ -56,7 +62,20 @@ jobs:
           # You can change the name of the tag with this input.
           # Default: 'latest'
           tag-name: latest
-
-          # If a description is provided, the action will use it to create an annotated tag. If none is given, the action will create a lightweight tag.
-          # Optional
-#           description: Description for the tag
+      - name: Release & Assets
+        # You may pin to the exact commit or the version.
+        # uses: Hs1r1us/Release-AIO@354b8db50d5b6310b621cb6c5e29d1f8e611aff7
+        uses: Hs1r1us/Release-AIO@v1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # The name of the tag
+          tag_name: latest
+          # The name of the release
+          release_name: v${{ steps.versionfile.outputs.content }}.${{ steps.versionnum.outputs.content }}
+          # Text describing the contents of the tag
+          body: Automatic release from ${{ steps.date.outputs.date }}
+          # The path to the asset you want to upload
+          asset_files: Build.zip
+          # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
+          prerelease: ${{ steps.pre.outputs.content }}
