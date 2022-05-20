@@ -31,22 +31,32 @@ jobs:
         with:
           name: Completed Build
           path: ./build.pdx
-#   tag_new_version:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout the repo
-#         uses: actions/checkout@v3
-#       - name: Install the Playdate SDK
-#         id: playdate
-#         uses: pd-rs/get-playdate-sdk@0.1.2
-#         with:
-#             # possible values: version (1.10.0 or 1.9.3) or "latest"
-#             version: latest
-#       - name: Build the Project
-#         run: |
-#           pdc -k ./ ./build
-#       - name: Upload the build
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: Completed Build
-#           path: ./build.pdx
+      - name: Read version file
+        id: versionfile
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./version.txt
+      - name: Read build num
+        id: versionnum
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./buildnum.txt
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%d-%m-%Y')"
+      - name: Create a new tag
+        uses: negz/create-tag@v1
+        with:
+          version: ${{ steps.versionfile.outputs.content }}.${{ steps.versionnum.outputs.content }}
+          message: Automatic release from ${{ steps.date.outputs.date }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update the latest tag
+        uses: EndBug/latest-tag@latest
+        with:
+          # You can change the name of the tag with this input.
+          # Default: 'latest'
+          tag-name: latest
+
+          # If a description is provided, the action will use it to create an annotated tag. If none is given, the action will create a lightweight tag.
+          # Optional
+#           description: Description for the tag
