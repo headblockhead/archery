@@ -31,6 +31,22 @@ jobs:
         with:
           name: Completed Build
           path: ./build.pdx
+      - name: Read version file
+        id: versionfile
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./version.txt
+      - name: Read build num
+        id: versionnum
+        uses: wei/curl@master
+        with:
+          args: https://increment.build/${{secrets.buildID}}
+      - name: Create a new tag
+        uses: negz/create-tag@v1
+        with:
+          version: ${{ steps.versionfile.outputs.content }}.${{ steps.versionnum.outputs.content }}
+          message: ${{ github.event.inputs.message }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update the latest tag
         uses: EndBug/latest-tag@latest
         with:
