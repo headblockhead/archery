@@ -1,5 +1,7 @@
 name: New version
 
+permissions: write-all
+
 # Controls when the workflow will run
 on:
   push:
