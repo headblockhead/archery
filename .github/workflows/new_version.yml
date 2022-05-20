@@ -38,14 +38,17 @@ jobs:
           path: ./version.txt
       - name: Read build num
         id: versionnum
-        uses: wei/curl@master
+        uses: juliangruber/read-file-action@v1
         with:
-          args: https://increment.build/${{secrets.buildID}}
+          path: ./buildnum.txt
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%d-%m-%Y')"
       - name: Create a new tag
         uses: negz/create-tag@v1
         with:
           version: ${{ steps.versionfile.outputs.content }}.${{ steps.versionnum.outputs.content }}
-          message: ${{ github.event.inputs.message }}
+          message: Automatic release from ${{ steps.date.outputs.date }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update the latest tag
         uses: EndBug/latest-tag@latest
