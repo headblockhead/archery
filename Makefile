@@ -10,7 +10,7 @@ build:
 	\nbuild=`bash getBuildN.sh`\
 	\nimagePath=cards\
 	\nlaunchSoundPath=SFX/launchgame" > pdxinfo
-	echo `bash getBuildN_read.sh` > buildnum.txt
+	echo `bash getBuildN_read.sh` | tr -d '\n' > buildnum.txt
 	pdc -k ./ ./build # -k is for ignoring unrecognised files (image source files)
 	cp -r ./build.pdx ${PLAYDATE_SDK_PATH}/Disk/Games/archery.pdx	
 	PlaydateSimulator ./build.pdx
