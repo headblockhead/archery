@@ -38,7 +38,7 @@ TNT_enemy_1_1:setTag(1)
 local level1 = {
 	enemies = { TNT_enemy_1_1 },
 	walls = {},
-	cannonballs = 5,
+	cannonballs = 6,
 }
 
 -- LEVEL 2
@@ -50,7 +50,7 @@ TNT_enemy_2_1:setTag(1)
 local level2 = {
 	enemies = { TNT_enemy_2_1 },
 	walls = {},
-	cannonballs = 5,
+	cannonballs = 6,
 }
 
 -- LEVEL 3
@@ -62,7 +62,7 @@ TNT_enemy_3_1:setTag(1)
 local level3 = {
 	enemies = { TNT_enemy_3_1 },
 	walls = {},
-	cannonballs = 5,
+	cannonballs = 6,
 }
 
 -- LEVEL 4
@@ -79,7 +79,7 @@ wall_enemy_4_2:setTag(2)
 local level4 = {
 	enemies = { TNT_enemy_4_1 },
 	walls = { wall_enemy_4_2 },
-	cannonballs = 5,
+	cannonballs = 6,
 }
 
 -- LEVEL 5
@@ -96,7 +96,7 @@ wall_enemy_5_2:setTag(2)
 local level5 = {
 	enemies = { TNT_enemy_5_1 },
 	walls = { wall_enemy_5_2 },
-	cannonballs = 5,
+	cannonballs = 6,
 }
 
 -- LEVEL 6
@@ -118,7 +118,7 @@ wall_enemy_6_3:setTag(2)
 local level6 = {
 	enemies = { TNT_enemy_6_1 },
 	walls = { wall_enemy_6_2, wall_enemy_6_3 },
-	cannonballs = 5,
+	cannonballs = 6,
 }
 
 -- LEVEL 7
@@ -140,10 +140,82 @@ wall_enemy_7_3:setTag(2)
 local level7 = {
 	enemies = { TNT_enemy_7_1 },
 	walls = { wall_enemy_7_2, wall_enemy_7_3 },
-	cannonballs = 5,
+	cannonballs = 6,
 }
 
-levels = { level1, level2, level3, level4, level5, level6, level7 }
+
+-- LEVEL 8
+local TNT_enemy_8_1 = gfx.sprite.new(TNT_image)
+TNT_enemy_8_1:moveTo(340, 135)
+TNT_enemy_8_1:setCollideRect(0, 0, TNT_enemy_8_1:getSize())
+TNT_enemy_8_1:setTag(1)
+
+local wall_enemy_8_2 = gfx.sprite.new(Wall_image)
+wall_enemy_8_2:moveTo(300, 220)
+wall_enemy_8_2:setCollideRect(0, 0, wall_enemy_8_2:getSize())
+wall_enemy_8_2:setTag(2)
+
+local wall_enemy_8_3 = gfx.sprite.new(Wall_image)
+wall_enemy_8_3:moveTo(300, 40)
+wall_enemy_8_3:setCollideRect(0, 0, wall_enemy_8_3:getSize())
+wall_enemy_8_3:setTag(2)
+
+local level8 = {
+	enemies = { TNT_enemy_8_1 },
+	walls = { wall_enemy_8_2, wall_enemy_8_3 },
+	cannonballs = 6,
+}
+
+-- LEVEL 9
+local TNT_enemy_9_1 = gfx.sprite.new(TNT_image)
+TNT_enemy_9_1:moveTo(370, 135)
+TNT_enemy_9_1:setCollideRect(0, 0, TNT_enemy_9_1:getSize())
+TNT_enemy_9_1:setTag(1)
+
+local wall_enemy_9_2 = gfx.sprite.new(Wall_image)
+wall_enemy_9_2:moveTo(280, 220)
+wall_enemy_9_2:setCollideRect(0, 0, wall_enemy_9_2:getSize())
+wall_enemy_9_2:setTag(2)
+
+local wall_enemy_9_3 = gfx.sprite.new(Wall_image)
+wall_enemy_9_3:moveTo(280, 40)
+wall_enemy_9_3:setCollideRect(0, 0, wall_enemy_9_3:getSize())
+wall_enemy_9_3:setTag(2)
+
+local level9 = {
+	enemies = { TNT_enemy_9_1 },
+	walls = { wall_enemy_9_2, wall_enemy_9_3 },
+	cannonballs = 6,
+}
+
+-- LEVEL 10
+local TNT_enemy_10_1 = gfx.sprite.new(TNT_image)
+TNT_enemy_10_1:moveTo(370, 135)
+TNT_enemy_10_1:setCollideRect(0, 0, TNT_enemy_10_1:getSize())
+TNT_enemy_10_1:setTag(1)
+
+local TNT_enemy_10_4 = gfx.sprite.new(TNT_image)
+TNT_enemy_10_4:moveTo(240, 135)
+TNT_enemy_10_4:setCollideRect(0, 0, TNT_enemy_10_4:getSize())
+TNT_enemy_10_4:setTag(1)
+
+local wall_enemy_10_2 = gfx.sprite.new(Wall_image)
+wall_enemy_10_2:moveTo(280, 220)
+wall_enemy_10_2:setCollideRect(0, 0, wall_enemy_10_2:getSize())
+wall_enemy_10_2:setTag(2)
+
+local wall_enemy_10_3 = gfx.sprite.new(Wall_image)
+wall_enemy_10_3:moveTo(280, 40)
+wall_enemy_10_3:setCollideRect(0, 0, wall_enemy_10_3:getSize())
+wall_enemy_10_3:setTag(2)
+
+local level10 = {
+	enemies = { TNT_enemy_10_1, TNT_enemy_10_4 },
+	walls = { wall_enemy_10_2, wall_enemy_10_3 },
+	cannonballs = 6,
+}
+
+levels = { level1, level2, level3, level4, level5, level6, level7, level8, level9, level10 }
 
 -- Define sound FX players
 explosionSFX = playdate.sound.sampleplayer.new("SFX/explosion")
@@ -385,6 +457,16 @@ function updateballs(used, max)
 	gfx.setImageDrawMode(gfx.kDrawModeCopy)
 end
 
+local transition_win_image = gfx.image.new("images/transition_win")
+local transition_win_sprite = gfx.sprite.new(transition_win_image)
+transition_win_sprite:setZIndex(60)
+transition_win_sprite:moveTo(800, 120) -- Offscreen
+
+local transition_fail_image = gfx.image.new("images/transition_fail")
+local transition_fail_sprite = gfx.sprite.new(transition_fail_image)
+transition_fail_sprite:setZIndex(52)
+transition_fail_sprite:moveTo(800, 120) -- Offscreen
+
 local transition_image = gfx.image.new("images/transition")
 local transition_sprite = gfx.sprite.new(transition_image)
 transition_sprite:setZIndex(50)
@@ -455,7 +537,9 @@ local STATE_GAME_OVER = "game_over"
 local STATE_SET_ANGLE = "set_angle"
 local STATE_SET_VELOCITY = "set_velocity"
 local STATE_FIRING = "firing"
-local state = STATE_TITLE
+local STATE_GAME_WIN = "game_win"
+local STATE_LEVEL_TRANSITION_WIN = "transition_win"
+state = STATE_TITLE
 
 -- Player weapon.
 local angle = 45.0
@@ -475,6 +559,7 @@ local MENU_STATE_EXIT = "exit"
 local menu_state = MENU_STATE_ENTER
 
 local wipe_held_frames = 0
+local sleepticks = 0
 
 deleted = false
 
@@ -482,8 +567,19 @@ local qr_code_added = false
 
 -- Run on every frame
 function playdate.update()
+	if (state == STATE_GAME_WIN)
+	then
+		if (playdate.buttonIsPressed(playdate.kButtonA)) then
+			change_state(STATE_TITLE)
+			change_menu(MENU_STATE_ENTER)
+			transition_win_sprite:remove()
+			load_level(1)
+		end
+	end
 	if (state == STATE_TITLE) then
 		transition_sprite:remove()
+		transition_fail_sprite:remove()
+		transition_win_sprite:remove()
 		if (menu_state == MENU_STATE_ENTER) then
 			title_bg_sprite:add()
 			dpad:add()
@@ -565,8 +661,9 @@ function playdate.update()
 		inticks = 0
 		outticks = 0
 		defeated_enemies = 0
-		transition_sprite:moveTo(800, 120)
-		transition_sprite:add()
+		sleepticks = 0
+		transition_fail_sprite:moveTo(800, 120)
+		transition_fail_sprite:add()
 		change_state(STATE_LEVEL_TRANSITION_FAIL)
 		return
 	end
@@ -647,6 +744,12 @@ function playdate.update()
 				outticks = 0
 				defeated_enemies = 0
 				levelcompleteSFX:play()
+				if (level > #levels) then
+					transition_win_sprite:moveTo(800, 120)
+					transition_win_sprite:add()
+					change_state(STATE_LEVEL_TRANSITION_WIN)
+					return
+				end
 				transition_sprite:moveTo(800, 120)
 				transition_sprite:add()
 				change_state(STATE_LEVEL_TRANSITION)
@@ -673,6 +776,7 @@ function playdate.update()
 		elseif (inticks == 40) then
 			-- Load the level
 			sprite_indicator:setImage(indicator_image)
+
 			load_level(level)
 			autosave = load_autosave()
 			if (autosave) then
@@ -725,7 +829,7 @@ function playdate.update()
 		if (inticks < 40) then
 			inticks = inticks + 1
 			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
-			transition_sprite:moveTo(xpos, 120)
+			transition_fail_sprite:moveTo(xpos, 120)
 		elseif (inticks == 40) then
 			-- Load the title
 			sprite_indicator:setImage(indicator_image)
@@ -733,16 +837,48 @@ function playdate.update()
 			setup_menu(autosave, level, menu_state)
 			updateballs(used_cannonballs, level_cannonball_limit)
 			sprite_arrow:setRotation(90)
-			inticks = inticks + 1
+			sleepticks = sleepticks + 1
+			if (sleepticks > 25) then
+				inticks = inticks + 1
+			end
 			title_bg_sprite:add()
 			dpad:add()
 		elseif (outticks < 40) then
 			outticks = outticks + 1
 			xpos = playdate.easingFunctions.inOutSine(outticks, 200, -600, 40)
-			transition_sprite:moveTo(xpos, 120)
+			transition_fail_sprite:moveTo(xpos, 120)
 		else
-			transition_sprite:remove()
+			transition_fail_sprite:remove()
 			change_state(STATE_TITLE)
+			return
+		end
+	end
+	if (state == STATE_LEVEL_TRANSITION_WIN) then
+		if (inticks < 40) then
+			inticks = inticks + 1
+			xpos = playdate.easingFunctions.inOutSine(inticks, 800, -600, 40)
+			transition_win_sprite:moveTo(xpos, 120)
+		elseif (inticks == 40) then
+			-- Load the title
+			sprite_indicator:setImage(indicator_image)
+			menu_state = MENU_STATE_ENTER
+			setup_menu(autosave, level, menu_state)
+			updateballs(used_cannonballs, level_cannonball_limit)
+			sprite_arrow:setRotation(90)
+			sleepticks = sleepticks + 1
+			if (sleepticks > 25) then
+				inticks = inticks + 1
+			end
+			title_bg_sprite:add()
+			dpad:add()
+			change_state(STATE_GAME_WIN)
+			return
+		elseif (outticks < 40) then
+			outticks = outticks + 1
+			xpos = playdate.easingFunctions.inOutSine(outticks, 200, -600, 40)
+			transition_win_sprite:moveTo(xpos, 120)
+		else
+			transition_win_sprite:remove()
 			return
 		end
 	end
