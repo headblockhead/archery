@@ -50,7 +50,7 @@ jobs:
       - name: Create a new tag
         uses: negz/create-tag@v1
         with:
-          version: v${{ steps.versionfile.outputs.content }}.${{ steps.versionnum.outputs.content }} #version: v0.4.504
+          version: v${{ steps.versionfile.outputs.content }}.${{ steps.versionnum.outputs.content }}
           message: Automatic release from ${{ steps.date.outputs.date }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update the latest tag
@@ -67,7 +67,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # The name of the tag
-          tag_name: latest
+          tag_name: v${{ steps.versionfile.outputs.content }}.${{ steps.versionnum.outputs.content }}
           # The name of the release
           release_name: v${{ steps.versionfile.outputs.content }}.${{ steps.versionnum.outputs.content }}
           # Text describing the contents of the tag
@@ -75,4 +75,4 @@ jobs:
           # The path to the asset you want to upload
           asset_files: Build.zip
           # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
-          prerelease: true
+          prerelease: false
