@@ -2,7 +2,7 @@
 
 # Archery
 
-### A game for the [Play Date](https://play.date) by headblockhead. (https://play.date)
+### A game for the [PlayDate](https://play.date) by headblockhead. (https://play.date)
 
 ![The game's first level](./readme_sources/lvl1_aim.png)
 ![An arrow in flight](./readme_sources/lvl1_firing.png)
