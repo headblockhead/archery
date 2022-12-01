@@ -1,8 +1,1 @@
-name=Archery!
-author=Headblockhead
-description=Aim and FIRE!
-bundleID=com.headblockhead.archery
-version=0.7.546
-build=547
-imagePath=cards
-launchSoundPath=SFX/launchgame
+name=Archery!\nauthor=Headblockhead\ndescription=Aim and FIRE!\nbundleID=com.headblockhead.archery\nversion=0.7.\nbuild=\nimagePath=cards\nlaunchSoundPath=SFX/launchgame
