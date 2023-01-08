@@ -1,7 +1,13 @@
 name: Build
 
 # Controls when the workflow will run
-on: [push, workflow_dispatch]
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -10,12 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: Install the Playdate SDK
         id: playdate
         uses: pd-rs/get-playdate-sdk@0.1.2
         with:
-            # possible values: version (1.10.0 or 1.9.3) or "latest"
             version: latest
       - name: Build the Project
         run: |
@@ -23,5 +28,5 @@ jobs:
       - name: Upload the build
         uses: actions/upload-artifact@v3
         with:
-          name: Completed Build
+          name: Build
           path: ./build.pdx
