@@ -1,11 +1,9 @@
-[![Build](https://github.com/headblockhead/archery/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/headblockhead/archery/actions/workflows/main.yml)
-![Lines of code](https://img.shields.io/tokei/lines/github/headblockhead/archery)
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/headblockhead/archery/latest/total)
-
 # Archery
 Set the angle and velocity with the crank, then fire!
 
-### A game for the [PlayDate](https://play.date) by headblockhead. (https://play.date)
+A game for the [PlayDate](https://play.date) by headblockhead.
+
+## Screenshots
 
 ![The game's first level](./readme_sources/lvl1_aim.png)
 ![An arrow in flight](./readme_sources/lvl1_firing.png)
